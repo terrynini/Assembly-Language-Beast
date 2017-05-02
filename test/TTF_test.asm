@@ -7,7 +7,7 @@ include ..\include\GameSdk.inc
 
 SCREEN_WIDTH            equ 816d    
 SCREEN_HEIGHT           equ 624d
-
+Texturerender proto :DWORD, :DWORD, :Texture
 
 .data
 Caption          BYTE "YOURCRAFT X-D", 0
@@ -15,7 +15,7 @@ PIC_PNG          BYTE "img/WorldMap.png", 0
 rb               BYTE "rb", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
 Literal_one      BYTE "1", 0
-S_GAMESTART      BYTE "The quick brown fox jumps over the lazy dog", 0
+S_GAMESTART      BYTE "New Game", 0
 gWindow          DWORD ?
 gScreenSurface   DWORD ?
 gKeyPressSurface DWORD 5 DUP(?)
@@ -31,8 +31,6 @@ SDL_main PROC
     ;LOCAL will do the prologue & !!!!epilogue!!!! for you
     LOCAL   event[56]:BYTE
     LOCAL   quit:BYTE
-    LOCAL   gCurrentSurface:DWORD
-    LOCAL   gPNGSurface:DWORD
     ;init
     mov     quit, 0
     call    GameInit
@@ -67,7 +65,7 @@ SDL_main PROC
             push    gRender
             call    SDL_RenderCopy
             ;render text
-            call    Texturerender
+            invoke  Texturerender, 20, 100, TEXT_GAME
             ;SDL_RenderPresent
             push    gRender
             call    SDL_RenderPresent
@@ -152,21 +150,20 @@ LoadTexture ENDP
 LoadMedia PROC
     LOCAL   color:SDL_Color
     LOCAL   textSurface:DWORD
-    mov     color.R, 0
-    mov     color.G, 0
-    mov     color.B, 0
+    mov     color.R, 255
+    mov     color.G, 255
+    mov     color.B, 255
+    mov     color.A, 0
     ;TTF_OpenFont
     push    28d
     push    offset Font_gloria
     call    TTF_OpenFont
     mov     gFont, eax
     ;loadFromRenderedText
-    lea     eax, color
-    push    eax
-    ;;?????????????????????????????????????????????????
+    push    color
     push    offset S_GAMESTART
     push    gFont
-    call    TTF_RenderText_Solid
+    call    TTF_RenderText_Blended
     mov     textSurface, eax
     ;SDL_CreateTextureFromSurface
     push    textSurface
@@ -181,20 +178,16 @@ LoadMedia PROC
     ret
 LoadMedia ENDP 
 
-Texturerender PROC
+Texturerender PROC  X:DWORD, Y:DWORD, TEXTURE:Texture
     LOCAL renderQuad:SDL_Rect
     LOCAL point:SDL_Point
-    mov     eax, SCREEN_WIDTH
-    sub     eax, TEXT_GAME.mWidth
-    shr     eax, 2
+    mov     eax, X
     mov     renderQuad.X, eax
-    mov     eax, SCREEN_HEIGHT
-    sub     eax, TEXT_GAME.mHeight
-    shr     eax, 2
+    mov     eax, Y
     mov     renderQuad.Y, eax
-    mov     eax, TEXT_GAME.mWidth
+    mov     eax, TEXTURE.mWidth
     mov     renderQuad.W, eax
-    mov     eax, TEXT_GAME.mHeight
+    mov     eax, TEXTURE.mHeight
     mov     renderQuad.H, eax
     ;SDL_RenderCopyEx
     push    SDL_FLIP_NONE
@@ -205,7 +198,7 @@ Texturerender PROC
     lea     eax, renderQuad
     push    eax
     push    0
-    push    TEXT_GAME.mTexture
+    push    TEXTURE.mTexture
     push    gRender
     call    SDL_RenderCopyEx
     ret
