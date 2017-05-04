@@ -9,14 +9,25 @@ extern CurrentKeystate:DWORD
 extern SE_Cusor:DWORD
 extern SE_Confirm:DWORD
 extern gRender:DWORD
-extern BackgroundTexture:Texture
 extern GameExit:PROC
-extern BackgroundTextureptr:DWORD
 
 .data
 Currentoption    DWORD 0
-
+PIC_PNG          BYTE "img/WorldMap.png", 0
+BackgroundTexture   Texture {?, ?, ?}
+    
 .code
+
+StateTitle_Init PROC
+    push    ebp
+    mov     ebp, esp
+
+    invoke  TextureLoader,addr BackgroundTexture, addr PIC_PNG, gRender
+
+    leave
+    ret
+StateTitle_Init ENDP
+
 StateTitle_TickTock PROC
     push    ebp
     mov     ebp, esp

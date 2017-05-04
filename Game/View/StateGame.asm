@@ -4,6 +4,7 @@ option casemap:none
 
 include .\include\GameSdk.inc
 
+extern CurrentKeystate:DWORD
 
 .data
 
@@ -11,7 +12,12 @@ include .\include\GameSdk.inc
 StateGame_TickTock PROC
     push    ebp
     mov     ebp, esp
+
+    mov     esi, CurrentKeystate
     call    CreatureController_TickTock
+    .IF     BYTE ptr [esi + SDL_SCANCODE_B]>0
+        invoke  SetState, STATE_BACKPACK
+    .ENDIF
     leave
     ret
 StateGame_TickTock ENDP

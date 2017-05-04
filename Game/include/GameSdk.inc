@@ -65,6 +65,7 @@ extern SDL_Delay:near
 extern IMG_LoadTexture:near
 extern Mix_PauseMusic:near
 extern SDL_SetWindowIcon:near
+extern SDL_CreateRGBSurface:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -88,6 +89,7 @@ SDL_SCANCODE_DOWN               equ 51h
 SDL_SCANCODE_LEFT               equ 50h
 SDL_SCANCODE_RIGHT              equ 4fh
 SDL_SCANCODE_SPACE              equ 2ch
+SDL_SCANCODE_B                  equ 5
 MIX_DEFAULT_FORMAT              equ 8010h
 AUDIO_MUSIC                     equ 1
 AUDIO_WAV                       equ 0
@@ -153,8 +155,6 @@ FontRender          proto :ptr DWORD, :ptr Texture, :DWORD, :DWORD;TextField:ptr
 FontLoader          proto :ptr BYTE, :ptr DWORD          ;ttfFileptr:ptr BYTE, FontPtr:ptr DWORD
 StateTickTock       proto
 StateRender         proto
-StateTitle_TickTock proto
-StateTitle_Render   proto
 MediaLoader         proto :DWORD                        ;gRender
 
 State_Init          proto
@@ -171,11 +171,19 @@ CreatureController_TickTock proto
 
 StatusBar_Init      proto
 StatusBar_Render    proto
- 
+
+StateTitle_Init     proto
+StateTitle_TickTock proto
+StateTitle_Render   proto
+
+BackPack_Init       proto
+BackPack_TickTock   proto
+BackPack_Render     proto
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................
 
 STATE_TITLE     equ 0
 STATE_GAME      equ 1
+STATE_BACKPACK  equ 2
 

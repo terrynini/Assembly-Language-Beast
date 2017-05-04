@@ -14,5 +14,4 @@ public CurrentKeystate
 public SE_Cusor
 public SE_Confirm
 public gRender
-public BackgroundTexture
 public Camera

@@ -8,11 +8,11 @@ include .\include\Main.inc
 .data
 Caption          BYTE "YOURCRAFT X-D", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
-PIC_PNG          BYTE "img/WorldMap.png", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
 Confirm_SE       BYTE "res/audio/se/Cursor2.wav", 0
 Icon             BYTE "res/img/icon.png", 0
+
 
 playing          DWORD 0
 Currentoption    DWORD 0
@@ -31,7 +31,7 @@ gRender             DWORD ?
 gMusic              DWORD ?
 SE_Cusor            DWORD ?
 SE_Confirm          DWORD ?
-BackgroundTexture   Texture {?, ?, ?}
+
 
 OptionTexture       Texture 2 DUP ({?, ?, ?})
 WorldMap            BYTE MAP_BLOCKS_ROW*MAP_BLOCKS_COL DUP (?)
@@ -77,7 +77,6 @@ LoadMedia PROC
     push    ebp
     mov     ebp, esp
 
-    invoke  TextureLoader,addr BackgroundTexture, addr PIC_PNG, gRender
     invoke  FontLoader, addr Font_gloria,addr gFont
     invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender
     invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender
@@ -201,8 +200,8 @@ GameInit ENDP
 
 GameExit PROC
     ;SDL_DestroyTexture
-    push    offset BackgroundTexture
-    call    SDL_DestroyTexture
+    ;push    offset BackgroundTexture
+    ;call    SDL_DestroyTexture
     ;SDL_DestroyWindow
     push    gWindow
     call    SDL_DestroyWindow

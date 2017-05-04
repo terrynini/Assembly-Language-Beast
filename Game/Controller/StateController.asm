@@ -11,7 +11,13 @@ CurrentState    DWORD   STATE_TITLE
 .code
 
 State_Init PROC
+    push    ebp
+    mov     ebp, esp
+
     call    StatusBar_Init
+    call    StateTitle_Init
+    call    BackPack_Init
+    leave
     ret
 State_Init ENDP
 
@@ -29,6 +35,8 @@ StateTickTock PROC
         call    StateTitle_TickTock
     .ELSEIF CurrentState == STATE_GAME
         call    StateGame_TickTock
+    .ELSEIF CurrentState == STATE_BACKPACK
+        call    BackPack_TickTock
     .ENDIF
 
     leave
@@ -43,6 +51,8 @@ StateRender PROC
         call    StateTitle_Render
     .ELSEIF CurrentState == STATE_GAME
         call    StateGame_Render
+    .ELSEIF CurrentState == STATE_BACKPACK
+        call    BackPack_Render
     .ENDIF
 
     leave

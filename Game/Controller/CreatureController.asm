@@ -9,7 +9,7 @@ AniFrame    equ 8
 extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
-
+extern SS_SideBar:Texture
 .data
 Actor2      BYTE "res/img/characters/Actor2.png", 0
 Player_Main Player  {}
@@ -116,13 +116,27 @@ CreatureController_TickTock PROC
     add     Player_Main.Father.X, eax
     mov     eax, YSpeed
     add     Player_Main.Father.Y, eax
+    ;Check the boundary of Charactor
+    .IF Camera.X < 0
+        mov Camera.X, 0
+    .ELSEIF Camera.X > 48 * MAP_BLOCKS_ROW- SCREEN_WIDTH
+        mov Camera.X,  48 * MAP_BLOCKS_ROW - SCREEN_WIDTH
+    .ENDIF
+    .IF Camera.X < 0
+        mov Camera.X, 0
+    .ELSEIF Camera.X > 48 * MAP_BLOCKS_ROW- SCREEN_WIDTH
+        mov Camera.X,  48 * MAP_BLOCKS_ROW - SCREEN_WIDTH
+    .ENDIF
     ;Move Camera
     mov     eax, Player_Main.Father.X
     sub     eax, SCREEN_HALF_WIDTH
+    add     eax, 24                     ;Player_Main.Fater.texture.mWidth/2
     mov     Camera.X, eax
     mov     eax, Player_Main.Father.Y
     sub     eax, SCREEN_HALF_HEIGHT
+    add     eax, 24
     mov     Camera.Y, eax
+    ;Check the boundary of camera
     .IF Camera.X < 0
         mov Camera.X, 0
     .ELSEIF Camera.X > 48 * MAP_BLOCKS_ROW- SCREEN_WIDTH
@@ -185,6 +199,8 @@ CreatureController_TickTock ENDP
 CreatureController_Render PROC
     push    ebp
     mov     ebp, esp
+
+    invoke  Texturerender, 0, 0, SS_SideBar, gRender, 0
 
     xor     edx, edx
     mov     eax, Player_Main.Father.AniCount
