@@ -8,7 +8,17 @@
 ;IFNDEF GAMESDK_INC
 ;GAMESDK_INC equ <1>
 ;ENDIF
+;==========================================================================
+;                   Declatation of Global variable
+;..........................................................................
 
+SCREEN_WIDTH            equ 816d   
+SCREEN_HALF_WIDTH       equ 408d
+SCREEN_HEIGHT           equ 624d
+SCREEN_HALF_HEIGHT      equ 312d
+UPDATE_MSEC             equ 17d
+MAP_BLOCKS_ROW          equ 100d
+MAP_BLOCKS_COL          equ 100d
 ;==========================================================================
 ;                           Declaration of SDL_functions
 ;..........................................................................
@@ -53,6 +63,8 @@ extern Mix_HaltMusic:near
 extern SDL_GetTicks:near
 extern SDL_Delay:near
 extern IMG_LoadTexture:near
+extern Mix_PauseMusic:near
+extern SDL_SetWindowIcon:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -96,15 +108,15 @@ Texture Struct
 Texture ENDS
 
 SDL_Rect Struct
-    X   DWORD  ?
-    Y   DWORD  ?
+    X   SDWORD  ?
+    Y   SDWORD  ?
     W   DWORD  ?
     H   DWORD  ?
 SDL_Rect ENDS
 
 SDL_Point Struct
-    X   DWORD ?
-    Y   DWORD ?
+    X   SDWORD ?
+    Y   SDWORD ?
 SDL_Point ENDS
 
 ;==========================================================================
@@ -112,11 +124,22 @@ SDL_Point ENDS
 ;..........................................................................
 
 Entity  Struct
-    X       DWORD ?
-    Y       DWORD ?
-    texture DWORD ?
-
+    X           SDWORD ?
+    Y           SDWORD ?
+    AniCount    SDWORD ?
+    texture     Texture {?, ?, ?}
+    Clip        SDL_Rect 12 DUP({?, ?, 48, 48})
+    BoundBox    SDL_Rect {?, ?, ?, ?}
 Entity  ENDS
+
+Player Struct
+    Father      Entity {}
+    Health_Max  SDWORD 100
+    Health_Now  SDWORD 50
+    Mana_MAX    SDWORD 200
+    Mana_Now    SDWORD 150
+Player ENDS
+
 
 ;==========================================================================
 ;                   Declatation of Procedure
@@ -133,15 +156,26 @@ StateRender         proto
 StateTitle_TickTock proto
 StateTitle_Render   proto
 MediaLoader         proto :DWORD                        ;gRender
+
+State_Init          proto
 SetState            proto :DWORD                        ;State:DWORD
 StateGame_TickTock  proto
 StateGame_Render    proto
+
+Map_Init            proto
+Map_Render          proto
+
+CreatureController_Init     proto
+CreatureController_Render   proto
+CreatureController_TickTock proto
+
+StatusBar_Init      proto
+StatusBar_Render    proto
+ 
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................
 
 STATE_TITLE     equ 0
 STATE_GAME      equ 1
-;==========================================================================
-;                   Declatation of Global variable
-;..........................................................................
+

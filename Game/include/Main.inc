@@ -15,4 +15,4 @@ public SE_Cusor
 public SE_Confirm
 public gRender
 public BackgroundTexture
-public SS_Outside_A2
+public Camera

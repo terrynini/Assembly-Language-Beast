@@ -12,15 +12,17 @@ extern gRender:DWORD
 extern BackgroundTexture:Texture
 extern GameExit:PROC
 extern BackgroundTextureptr:DWORD
+
 .data
 Currentoption    DWORD 0
+
 .code
 StateTitle_TickTock PROC
     push    ebp
     mov     ebp, esp
 
     mov     esi, CurrentKeystate
-    .IF     BYTE ptr [esi + SDL_SCANCODE_UP]>0 || BYTE ptr [esi + SDL_SCANCODE_UP - 1]>0
+    .IF     BYTE ptr [esi + SDL_SCANCODE_UP]>0 || BYTE ptr [esi + SDL_SCANCODE_DOWN]>0
         invoke  MusicPlayer, SE_Cusor, AUDIO_WAV
         mov     edi, offset OptionTexture
         push    60
@@ -36,6 +38,7 @@ StateTitle_TickTock PROC
     .ELSEIF BYTE ptr [esi + SDL_SCANCODE_SPACE]>0
         invoke  MusicPlayer, SE_Cusor, AUDIO_WAV
         .IF     Currentoption == 0
+            call    Mix_PauseMusic
             invoke  SetState, STATE_GAME
         .ELSE
             call    GameExit    

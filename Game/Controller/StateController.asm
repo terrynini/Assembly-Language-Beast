@@ -10,6 +10,11 @@ CurrentState    DWORD   STATE_TITLE
 
 .code
 
+State_Init PROC
+    call    StatusBar_Init
+    ret
+State_Init ENDP
+
 SetState PROC State:DWORD
     mov     eax, State
     mov     CurrentState, eax

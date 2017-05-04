@@ -5,10 +5,6 @@ option casemap:none
 include .\include\GameSdk.inc
 include .\include\Main.inc
 
-SCREEN_WIDTH            equ 816d    
-SCREEN_HEIGHT           equ 624d
-UPDATE_MSEC             equ 17d
-
 .data
 Caption          BYTE "YOURCRAFT X-D", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
@@ -16,7 +12,7 @@ PIC_PNG          BYTE "img/WorldMap.png", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
 Confirm_SE       BYTE "res/audio/se/Cursor2.wav", 0
-Outside_A2       BYTE "res/img/tilesets/Outside_A2.png", 0
+Icon             BYTE "res/img/icon.png", 0
 
 playing          DWORD 0
 Currentoption    DWORD 0
@@ -36,9 +32,11 @@ gMusic              DWORD ?
 SE_Cusor            DWORD ?
 SE_Confirm          DWORD ?
 BackgroundTexture   Texture {?, ?, ?}
-SS_Outside_A2       Texture {?, ?, ?}
+
 OptionTexture       Texture 2 DUP ({?, ?, ?})
-WorldMap            BYTE 10000 DUP (?)
+WorldMap            BYTE MAP_BLOCKS_ROW*MAP_BLOCKS_COL DUP (?)
+Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 .code
 SDL_main PROC
     ;LOCAL will do the prologue & !!!!epilogue!!!! for you
@@ -80,7 +78,6 @@ LoadMedia PROC
     mov     ebp, esp
 
     invoke  TextureLoader,addr BackgroundTexture, addr PIC_PNG, gRender
-    invoke  TextureLoader,addr SS_Outside_A2, addr Outside_A2, gRender
     invoke  FontLoader, addr Font_gloria,addr gFont
     invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender
     invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender
@@ -160,6 +157,12 @@ GameInit PROC
     push    OFFSET Caption
     call    SDL_CreateWindow
     mov     gWindow, eax
+    ;SDL_SetWindowIcon
+    push    offset Icon
+    call    IMG_Load
+    push    eax
+    push    gWindow
+    call    SDL_SetWindowIcon
     ;SDL_CreateRenderer
     mov     eax, SDL_RENDERER_ACCELERATED
     or      eax, SDL_RENDERER_PRESENTVSYNC
@@ -186,7 +189,12 @@ GameInit PROC
     push    MIX_DEFAULT_FORMAT
     push    44100
     call    Mix_OpenAudio
-
+    ;Init   Map
+    call    Map_Init
+    ;Init CreatureController
+    call    CreatureController_Init
+    ;Init State Card
+    call    State_Init 
     leave
     ret
 GameInit ENDP

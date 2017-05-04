@@ -10,6 +10,7 @@ include .\include\GameSdk.inc
 Texturerender PROC  X:DWORD, Y:DWORD, TEXTURE:Texture, gRender:DWORD, Clip:ptr SDL_Rect
     LOCAL renderQuad:SDL_Rect
     LOCAL point:SDL_Point
+    
     mov     eax, X
     mov     renderQuad.X, eax
     mov     eax, Y
@@ -39,6 +40,7 @@ Texturerender PROC  X:DWORD, Y:DWORD, TEXTURE:Texture, gRender:DWORD, Clip:ptr S
     push    TEXTURE.mTexture
     push    gRender
     call    SDL_RenderCopyEx
+
     ret
 Texturerender ENDP
 end
