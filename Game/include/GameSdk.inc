@@ -2,8 +2,8 @@
 ;                               Game SDK
 ;       author  : terrynini
 ;       created : 2017/04/20
-;       updated : 2017/05/01
-;       version : 0.2
+;       updated : 2017/05/06
+;       version : 0.3
 ;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ;IFNDEF GAMESDK_INC
 ;GAMESDK_INC equ <1>
@@ -19,8 +19,10 @@ SCREEN_HALF_HEIGHT      equ 312d
 UPDATE_MSEC             equ 17d
 MAP_BLOCKS_ROW          equ 100d
 MAP_BLOCKS_COL          equ 100d
+ROOM_MAX_WIDTH          equ 40d
+ROOM_MAX_HEIGHT         equ 40d
 ;==========================================================================
-;                           Declaration of SDL_functions
+;                           Declaration of extern function
 ;..........................................................................
 extern SDL_Init:near
 extern SDL_CreateWindow:near
@@ -66,6 +68,11 @@ extern IMG_LoadTexture:near
 extern Mix_PauseMusic:near
 extern SDL_SetWindowIcon:near
 extern SDL_CreateRGBSurface:near
+extern SDL_HasIntersection:near
+extern SDL_RenderFillRect:near
+extern time:near
+extern srand:near
+extern rand:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -90,6 +97,7 @@ SDL_SCANCODE_LEFT               equ 50h
 SDL_SCANCODE_RIGHT              equ 4fh
 SDL_SCANCODE_SPACE              equ 2ch
 SDL_SCANCODE_B                  equ 5
+SDL_TRUE                        equ 1
 MIX_DEFAULT_FORMAT              equ 8010h
 AUDIO_MUSIC                     equ 1
 AUDIO_WAV                       equ 0
@@ -147,18 +155,21 @@ Player ENDS
 ;                   Declatation of Procedure
 ;..........................................................................
 
-TextureLoader       proto :ptr Texture, :ptr DWORD, :DWORD          ;fileptr: ptr DWORD, gRender:DWORD
-MusicLoader         proto :ptr DWORD, :ptr BYTE, :BYTE ;AudioPtr:ptr DWORD, FilePtr:ptr BYTE, LoadType:BYTE
-MusicPlayer         proto :DWORD, :BYTE                 ;AudioPtr:DWORD, PlayType:BYTE
-Texturerender       proto :DWORD, :DWORD, :Texture, :DWORD, :ptr SDL_Rect ; X:DWORD, Y:DWORD, TEXTURE:Texture, gRender:DWORD
-FontRender          proto :ptr DWORD, :ptr Texture, :DWORD, :DWORD;TextField:ptr DWORD, Texturept:ptr Texture, gFont:DWORD, gRender:DWORD
-FontLoader          proto :ptr BYTE, :ptr DWORD          ;ttfFileptr:ptr BYTE, FontPtr:ptr DWORD
-StateTickTock       proto
-StateRender         proto
-MediaLoader         proto :DWORD                        ;gRender
+MusicLoader         proto :ptr DWORD, :ptr BYTE, :BYTE
+MusicPlayer         proto :DWORD, :BYTE
+
+Texturerender       proto :DWORD, :DWORD, :Texture, :DWORD, :ptr SDL_Rect
+TextureLoader       proto :ptr Texture, :ptr DWORD, :DWORD
+
+FontRender          proto :ptr DWORD, :ptr Texture, :DWORD, :DWORD
+FontLoader          proto :ptr BYTE, :ptr DWORD          
 
 State_Init          proto
-SetState            proto :DWORD                        ;State:DWORD
+SetState            proto :DWORD                        
+StateTickTock       proto
+StateRender         proto
+
+StateGame_Init      proto
 StateGame_TickTock  proto
 StateGame_Render    proto
 

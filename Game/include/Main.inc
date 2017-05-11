@@ -9,9 +9,8 @@
 ;MAIN_INC equ <1>
 ;ENDIF
 
-public OptionTexture
 public CurrentKeystate
 public SE_Cusor
-public SE_Confirm
 public gRender
+public gFont
 public Camera

@@ -17,6 +17,8 @@ State_Init PROC
     call    StatusBar_Init
     call    StateTitle_Init
     call    BackPack_Init
+    call    StateGame_Init
+
     leave
     ret
 State_Init ENDP

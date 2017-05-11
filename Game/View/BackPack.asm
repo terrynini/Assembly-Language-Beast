@@ -5,11 +5,13 @@ option casemap:none
 include .\include\GameSdk.inc
 
 extern gRender:DWORD
-DrawSideBar_row proto :SDL_Rect, :SDL_Rect, :SDL_Rect
-DrawSideBar proto :ptr SDL_Rect
-public SS_SideBar
+extern CurrentKeystate:DWORD
+
+DrawSideBar_row proto :SDL_Rect, :SDL_Rect, :SDL_Rect, :SDWORD
+DrawSideBar proto :ptr SDL_Rect, :SDWORD, :SDWORD, :SDWORD
 
 .data
+ColdDown        BYTE 0
 File_System     BYTE "res/img/system/Window.png", 0
 SS_System       Texture {?, ?, ?}
 SS_SideBar      Texture {?, ?, ?}
@@ -30,7 +32,8 @@ MaterialSurface DWORD ?
 
 .code
 BackPack_Init PROC
-    LOCAL   LoopCounter:DWORD
+    push    ebp
+    mov     ebp, esp
     ;Load picture
     push    offset File_System 
     call    IMG_Load
@@ -47,9 +50,13 @@ BackPack_Init PROC
     call    SDL_CreateRGBSurface
     mov     SidebarSurface, eax
     ;draw on new Surface
-    invoke  DrawSideBar,addr Clip_Background
-    invoke  DrawSideBar,addr Clip_LineCover
-    invoke  DrawSideBar,addr Clip_Outline
+    invoke  DrawSideBar,addr Clip_Background, 0, 0, 14
+    invoke  DrawSideBar,addr Clip_LineCover, 0, 0, 14
+    invoke  DrawSideBar,addr Clip_Outline, 0, 0, 14
+
+    invoke  DrawSideBar,addr Clip_Background, 204, 0, 48
+    invoke  DrawSideBar,addr Clip_LineCover, 204, 0, 48
+    invoke  DrawSideBar,addr Clip_Outline, 204, 0, 48
     ;Create a new texture
     push    SidebarSurface
     push    gRender
@@ -70,7 +77,15 @@ BackPack_TickTock PROC
     push    ebp
     mov     ebp, esp
 
-
+     .IF     ColdDown < 30
+        add     ColdDown, 1 
+    .ENDIF
+    mov     esi, CurrentKeystate
+    .IF ColdDown > 20 && BYTE ptr [esi + SDL_SCANCODE_B] > 0 
+        invoke  SetState, STATE_GAME
+        mov     ColdDown, 0
+    .ENDIF
+ 
     leave
     ret
 BackPack_TickTock ENDP
@@ -79,46 +94,51 @@ BackPack_Render PROC
     push    ebp
     mov     ebp, esp
 
+    call    StateGame_Render
     invoke  Texturerender, 0, 0, SS_SideBar, gRender, 0
+    
     leave
     ret
 BackPack_Render ENDP
 
-DrawSideBar PROC ClipArray:ptr SDL_Rect
+DrawSideBar PROC ClipArray:ptr SDL_Rect, X:SDWORD, Y:SDWORD, WidthOfWin:SDWORD
     LOCAL   LoopCounter:DWORD
-    mov     esi, ClipArray
-    invoke  DrawSideBar_row,SDL_Rect ptr [esi +0],SDL_Rect ptr [esi +16],SDL_Rect ptr [esi +32]
-    mov     LoopCounter, 0
-    .WHILE LoopCounter < 50
-        mov     TargetRec.X, 0
-        add     TargetRec.Y, 12
-        mov     esi, ClipArray
-        invoke  DrawSideBar_row, SDL_Rect ptr [esi +48],SDL_Rect ptr [esi +64],SDL_Rect ptr [esi +80]
-        add     LoopCounter, 1
-    .ENDW
-    mov     TargetRec.X, 0
-    add     TargetRec.Y, 12
-    mov     esi, ClipArray
-    invoke  DrawSideBar_row, SDL_Rect ptr [esi +96],SDL_Rect ptr [esi +112],SDL_Rect ptr [esi +128]
-
-    mov     TargetRec.X, 0
-    mov     TargetRec.Y, 0   
+    mov     eax, X
+    mov     ebx, Y 
+    mov     TargetRec.X, eax
+    mov     TargetRec.Y, ebx
     mov     TargetRec.W, 48
     mov     TargetRec.H, 48    
+
+    mov     esi, ClipArray
+    invoke  DrawSideBar_row,SDL_Rect ptr [esi +0],SDL_Rect ptr [esi +16],SDL_Rect ptr [esi +32], WidthOfWin
+    mov     LoopCounter, 0
+    .WHILE LoopCounter < 50
+        mov     eax, X
+        mov     TargetRec.X, eax
+        add     TargetRec.Y, 12
+        mov     esi, ClipArray
+        invoke  DrawSideBar_row, SDL_Rect ptr [esi +48],SDL_Rect ptr [esi +64],SDL_Rect ptr [esi +80], WidthOfWin
+        add     LoopCounter, 1
+    .ENDW
+    mov     eax, X
+    mov     TargetRec.X, eax
+    add     TargetRec.Y, 12
+    mov     esi, ClipArray
+    invoke  DrawSideBar_row, SDL_Rect ptr [esi +96],SDL_Rect ptr [esi +112],SDL_Rect ptr [esi +128], WidthOfWin
 
     ret
 DrawSideBar ENDP
 
-DrawSideBar_row PROC Clip_LEFT:SDL_Rect, Clip_MIDDLE:SDL_Rect, Clip_RIGHT:SDL_Rect
-    LOCAL   LoopCounter:DWORD
+DrawSideBar_row PROC Clip_LEFT:SDL_Rect, Clip_MIDDLE:SDL_Rect, Clip_RIGHT:SDL_Rect, LoopCounter:SDWORD
     push    offset TargetRec
     push    SidebarSurface
     lea     eax, Clip_LEFT
     push    eax
     push    MaterialSurface
     call    SDL_UpperBlit
-    mov     LoopCounter, 0
-    .WHILE  LoopCounter <= 14
+
+    .WHILE  LoopCounter >= 0
         add     TargetRec.X, 12
         push    offset TargetRec
         push    SidebarSurface
@@ -126,7 +146,7 @@ DrawSideBar_row PROC Clip_LEFT:SDL_Rect, Clip_MIDDLE:SDL_Rect, Clip_RIGHT:SDL_Re
         push    eax
         push    MaterialSurface
         call    SDL_UpperBlit
-        add     LoopCounter, 1
+        sub     LoopCounter, 1
     .ENDW
     add     TargetRec.X, 12
     push    offset TargetRec

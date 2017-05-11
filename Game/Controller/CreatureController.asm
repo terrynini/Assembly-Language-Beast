@@ -200,8 +200,6 @@ CreatureController_Render PROC
     push    ebp
     mov     ebp, esp
 
-    invoke  Texturerender, 0, 0, SS_SideBar, gRender, 0
-
     xor     edx, edx
     mov     eax, Player_Main.Father.AniCount
     mov     ebx, AniFrame

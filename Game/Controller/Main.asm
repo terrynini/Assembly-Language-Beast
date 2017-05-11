@@ -10,9 +10,8 @@ Caption          BYTE "YOURCRAFT X-D", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
-Confirm_SE       BYTE "res/audio/se/Cursor2.wav", 0
 Icon             BYTE "res/img/icon.png", 0
-
+Loading          BYTE "res/img/system/Loading.png", 0
 
 playing          DWORD 0
 Currentoption    DWORD 0
@@ -30,10 +29,7 @@ gFont               DWORD ?
 gRender             DWORD ?
 gMusic              DWORD ?
 SE_Cusor            DWORD ?
-SE_Confirm          DWORD ?
 
-
-OptionTexture       Texture 2 DUP ({?, ?, ?})
 WorldMap            BYTE MAP_BLOCKS_ROW*MAP_BLOCKS_COL DUP (?)
 Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
@@ -45,12 +41,6 @@ SDL_main PROC
     ;init
     mov     delta, 0
     call    GameInit
-    ;load iamge
-    call    LoadMedia
-    ;init option image
-    push    180
-    push    OptionTexture.mTexture
-    call    SDL_SetTextureAlphaMod
     ;TimerStart
     call    SDL_GetTicks
     mov     startTime, eax
@@ -78,11 +68,8 @@ LoadMedia PROC
     mov     ebp, esp
 
     invoke  FontLoader, addr Font_gloria,addr gFont
-    invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender
-    invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender
     invoke  MusicLoader, addr gMusic,addr MUS_BGM, AUDIO_MUSIC
     invoke  MusicLoader, addr SE_Cusor, addr Cusor_SE, AUDIO_WAV
-    invoke  MusicLoader, addr SE_Confirm, addr Confirm_SE, AUDIO_WAV  
     ;play   background music
     invoke  MusicPlayer, gMusic, AUDIO_MUSIC
 
@@ -109,11 +96,11 @@ GameUpdate PROC
     push    0
     call    SDL_GetKeyboardState
     mov     CurrentKeystate, eax
-    ;Update 
-    call    StateTickTock
     NextEvent:                  
     jmp     PollLoop    ;go back to deal with next event
     GameUpdate_end:
+    ;Update 
+    call    StateTickTock
     ret
 GameUpdate ENDP
 
@@ -192,6 +179,8 @@ GameInit PROC
     call    Map_Init
     ;Init CreatureController
     call    CreatureController_Init
+    ;load iamge
+    call    LoadMedia
     ;Init State Card
     call    State_Init 
     leave
