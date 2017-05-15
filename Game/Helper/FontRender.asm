@@ -8,7 +8,7 @@ include .\include\GameSdk.inc
 
 .code
 
-FontRender PROC TextField:ptr DWORD, Texturept:ptr Texture, Font:DWORD, gRender:DWORD
+FontRender PROC TextField:ptr DWORD, Texturept:ptr Texture, Font:DWORD, gRender:DWORD, Alpha:DWORD
     LOCAL   color:SDL_Color
     LOCAL   textSurface:DWORD
 
@@ -38,7 +38,7 @@ FontRender PROC TextField:ptr DWORD, Texturept:ptr Texture, Font:DWORD, gRender:
     push    [esi].Texture.mTexture
     call    SDL_SetTextureBlendMode
     ;SDL_SetTextureAlphaMod
-    push    60
+    push    Alpha
     push    [esi].Texture.mTexture
     call    SDL_SetTextureAlphaMod
 

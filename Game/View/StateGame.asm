@@ -8,7 +8,7 @@ extern CurrentKeystate:DWORD
 
 .data
 BackPack_CD BYTE 0
-Open_SE     BYTE "res/audio/se/Equip2.wav", 0
+Open_SE     BYTE "res/audio/se/book2.wav", 0
 SE_OpenBP   DWORD ?
 .code
 

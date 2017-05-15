@@ -8,6 +8,7 @@ include .\include\Main.inc
 .data
 Caption          BYTE "YOURCRAFT X-D", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
+Font_Rationale   BYTE "Fonts/Rationale-Regular.ttf", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
 Icon             BYTE "res/img/icon.png", 0
@@ -26,11 +27,12 @@ SDL_HINT_RENDER_SCALE_QUALITY  BYTE "SDL_HINT_RENDER_SCALE_QUALITY", 0
 CurrentKeystate     DWORD ?  
 gWindow             DWORD ?
 gFont               DWORD ?
+gFont_Ration        DWORD ?
 gRender             DWORD ?
 gMusic              DWORD ?
 SE_Cusor            DWORD ?
 
-WorldMap            BYTE MAP_BLOCKS_ROW*MAP_BLOCKS_COL DUP (?)
+WorldMap            BYTE MAP_BLOCKS_X*MAP_BLOCKS_Y DUP (?)
 Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 .code
@@ -67,7 +69,8 @@ LoadMedia PROC
     push    ebp
     mov     ebp, esp
 
-    invoke  FontLoader, addr Font_gloria,addr gFont
+    invoke  FontLoader, addr Font_gloria, addr gFont
+    invoke  FontLoader, addr Font_Rationale, addr gFont_Ration
     invoke  MusicLoader, addr gMusic,addr MUS_BGM, AUDIO_MUSIC
     invoke  MusicLoader, addr SE_Cusor, addr Cusor_SE, AUDIO_WAV
     ;play   background music

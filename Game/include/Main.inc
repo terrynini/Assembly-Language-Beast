@@ -14,3 +14,4 @@ public SE_Cusor
 public gRender
 public gFont
 public Camera
+public gFont_Ration

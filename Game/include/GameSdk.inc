@@ -2,7 +2,7 @@
 ;                               Game SDK
 ;       author  : terrynini
 ;       created : 2017/04/20
-;       updated : 2017/05/06
+;       updated : 2017/05/15
 ;       version : 0.3
 ;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ;IFNDEF GAMESDK_INC
@@ -17,8 +17,8 @@ SCREEN_HALF_WIDTH       equ 408d
 SCREEN_HEIGHT           equ 624d
 SCREEN_HALF_HEIGHT      equ 312d
 UPDATE_MSEC             equ 17d
-MAP_BLOCKS_ROW          equ 100d
-MAP_BLOCKS_COL          equ 100d
+MAP_BLOCKS_X            equ 100d
+MAP_BLOCKS_Y            equ 100d
 ROOM_MAX_WIDTH          equ 40d
 ROOM_MAX_HEIGHT         equ 40d
 ;==========================================================================
@@ -150,6 +150,14 @@ Player Struct
     Mana_Now    SDWORD 150
 Player ENDS
 
+Monster Struct
+    Father      Entity {}
+    AniDir      SDWORD 1
+    Health_Max  SDWORD 100
+    Health_Now  SDWORD 50
+    Mana_MAX    SDWORD 200
+    Mana_Now    SDWORD 150
+Monster ENDS
 
 ;==========================================================================
 ;                   Declatation of Procedure
@@ -161,7 +169,7 @@ MusicPlayer         proto :DWORD, :BYTE
 Texturerender       proto :DWORD, :DWORD, :Texture, :DWORD, :ptr SDL_Rect
 TextureLoader       proto :ptr Texture, :ptr DWORD, :DWORD
 
-FontRender          proto :ptr DWORD, :ptr Texture, :DWORD, :DWORD
+FontRender          proto :ptr DWORD, :ptr Texture, :DWORD, :DWORD, :DWORD
 FontLoader          proto :ptr BYTE, :ptr DWORD          
 
 State_Init          proto
@@ -190,6 +198,15 @@ StateTitle_Render   proto
 BackPack_Init       proto
 BackPack_TickTock   proto
 BackPack_Render     proto
+
+MainCharactor_Init      proto
+MainCharactor_TickTock  proto
+MainCharactor_Render    proto
+
+
+Monsters_Init       proto
+Monsters_TickTock   proto
+Monsters_Render     proto
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................

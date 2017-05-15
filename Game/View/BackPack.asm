@@ -6,6 +6,7 @@ include .\include\GameSdk.inc
 
 extern gRender:DWORD
 extern CurrentKeystate:DWORD
+extern gFont_Ration:DWORD
 
 DrawSideBar_row proto :SDL_Rect, :SDL_Rect, :SDL_Rect, :SDWORD
 DrawSideBar proto :ptr SDL_Rect, :SDWORD, :SDWORD, :SDWORD
@@ -13,9 +14,12 @@ DrawSideBar proto :ptr SDL_Rect, :SDWORD, :SDWORD, :SDWORD
 .data
 ColdDown        BYTE 0
 File_System     BYTE "res/img/system/Window.png", 0
+S_BackPack      BYTE "BackPack", 0
+S_About         BYTE "About", 0
 SS_System       Texture {?, ?, ?}
 SS_SideBar      Texture {?, ?, ?}
 TargetRec       SDL_Rect {0, 0, 48, 48}
+OptionTexture   Texture 2 DUP ({?, ?, ?})
 
 Clip_Background SDL_Rect {0, 0, 12, 12}, {12, 0, 12, 12}, {84, 0, 12, 12}, {0, 12, 12, 12} \
 , {12, 12, 12, 12}, {84, 12, 12, 12}, {0, 84, 12, 12}, {12, 84, 12, 12}, {84, 84, 12, 12}
@@ -68,7 +72,9 @@ BackPack_Init PROC
     mov     [esi].Texture.mWidth, edx
     mov     edx, [eax + 0ch]
     mov     [esi].Texture.mHeight, edx
-
+    ;Draw text on texture
+    invoke  FontRender, addr S_BackPack, addr OptionTexture, gFont_Ration, gRender, 255
+    invoke  FontRender, addr S_About, addr [OptionTexture + TYPE OptionTexture], gFont_Ration, gRender, 255
     leave
     ret
 BackPack_Init ENDP
@@ -97,6 +103,8 @@ BackPack_Render PROC
     call    StateGame_Render
     invoke  Texturerender, 0, 0, SS_SideBar, gRender, 0
     
+    invoke  Texturerender, 50, 60, OptionTexture, gRender, 0
+    invoke  Texturerender, 50, 140, [OptionTexture + TYPE OptionTexture], gRender, 0
     leave
     ret
 BackPack_Render ENDP

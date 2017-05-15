@@ -27,8 +27,8 @@ StateTitle_Init PROC
     mov     ebp, esp
 
     invoke  TextureLoader,addr BackgroundTexture, addr PIC_PNG, gRender
-    invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender
-    invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender
+    invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender, 60
+    invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender, 60
     ;init option image
     push    180
     push    OptionTexture.mTexture
