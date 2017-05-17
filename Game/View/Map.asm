@@ -11,6 +11,8 @@ extern gRender:DWORD
 extern BackgroundTexture:Texture
 extern Camera:SDL_Rect
 
+public Map_arr
+
 .data
 
 Grass           SDL_Rect {0, 0, 48, 48}
@@ -21,9 +23,9 @@ SS_Dungeon_A4   Texture {?, ?, ?}
 
 Map_arr         BYTE 10000 DUP( 0 )
 Rooms           SDL_Rect MAX_ROOMS DUP ({})
-RockGround      SDL_Rect 18 DUP ({?, ?, 48, 48}); lu u ru | lm m rm | lb b rb
+RockGround      SDL_Rect 36 DUP ({?, ?, 48, 48}); lu u ru | lm m rm | lb b rb | dopen uopen lopen ropen 
 
-RoomCounter     DWORD 0
+RoomCounter     SDWORD 0
 .code
 
 Map_Init PROC
@@ -34,7 +36,7 @@ Map_Init PROC
     invoke  TextureLoader,addr SS_Dungeon_A4, addr Dungeon_A4, gRender
     ;init the ground
     mov     esi, offset RockGround
-    mov     jloop, 3
+    mov     jloop, 5
     mov     iloop, 3
     xor     eax, eax
     xor     ebx, ebx
@@ -52,6 +54,43 @@ Map_Init PROC
         sub     jloop, 1
     .ENDW
 
+    mov     jloop, 2
+    mov     iloop, 3
+    mov     eax, 48*3
+    xor     ebx, ebx
+    .WHILE jloop > 0
+        .WHILE iloop > 0
+            mov     [esi].SDL_Rect.X, eax
+            mov     [esi].SDL_Rect.Y, ebx
+            add     esi, TYPE RockGround
+            add     eax, 48
+            sub     iloop, 1
+        .ENDW
+        mov     eax, 48*3
+        add     ebx, 48
+        mov     iloop, 3
+        sub     jloop, 1
+    .ENDW
+
+    mov     jloop, 5
+    mov     iloop, 3
+    mov     eax, 48*6
+    xor     ebx, ebx
+    .WHILE jloop > 0
+        .WHILE iloop > 0
+            mov     [esi].SDL_Rect.X, eax
+            mov     [esi].SDL_Rect.Y, ebx
+            add     esi, TYPE RockGround
+            add     eax, 48
+            sub     iloop, 1
+        .ENDW
+        mov     eax, 48*6
+        add     ebx, 48
+        mov     iloop, 3
+        sub     jloop, 1
+    .ENDW
+
+    
     ;init the rand function by srand
     push    0
     call    time
@@ -64,27 +103,6 @@ Map_Init PROC
 Map_Init ENDP
 
 Map_Render PROC
-    LOCAL   tloop:DWORD
-    LOCAL   jloop:DWORD
-    LOCAL   Xmin:SDWORD
-    LOCAL   Xmax:SDWORD
-    LOCAL   Ymin:SDWORD
-    LOCAL   Ymax:SDWORD
-
-    mov     tloop, 0
-    mov     jloop, 0
-    mov     eax, Camera.X
-    sub     eax, 48
-    mov     Xmin, eax
-    add     eax, 48
-    add     eax, SCREEN_WIDTH
-    mov     Xmax, eax
-    mov     eax, Camera.Y
-    sub     eax, 48
-    mov     Ymin, eax
-    add     eax, 48
-    add     eax, SCREEN_HEIGHT
-    mov     Ymax, eax
 
     call    RenderMaze
 
@@ -121,7 +139,7 @@ GenerateMaze PROC
             xor     edx, edx
             mov     ebx, ROOM_MAX_WIDTH 
             div     ebx
-            add     edx, 5
+            add     edx, 6
             mov     [esi].SDL_Rect.W, edx
 
             call    rand 
@@ -173,7 +191,7 @@ GenerateMaze PROC
         ;Move to the start point of a room
         mov     edi, offset Map_arr
         mov     eax, [esi].SDL_Rect.Y
-        add     eax, 2                  ;padding
+        add     eax, 3                  ;padding
         mov     ebx, MAP_BLOCKS_X
         mul     ebx
         add     edi, [esi].SDL_Rect.X
@@ -181,7 +199,7 @@ GenerateMaze PROC
         add     edi, eax
         mov     ebx, [esi].SDL_Rect.W
         mov     eax, [esi].SDL_Rect.H
-        sub     ebx, 2
+        sub     ebx, 3
         sub     eax, 3
         mov     wloop, ebx
         mov     hloop, eax
@@ -200,6 +218,13 @@ GenerateMaze PROC
         add     esi, TYPE Rooms
         sub     rloop, 1
     .ENDW
+
+    ;use flood fill to creat roads
+    xor     eax, eax
+    .WHILE  !eax
+        call    C_FloodFill 
+    .ENDW
+
     leave
     ret
 GenerateMaze ENDP
@@ -237,7 +262,7 @@ RenderMaze PROC
             mov     ebx, MAP_BLOCKS_X
             mul     ebx
             add     esi, eax
-            .IF byte ptr [esi] == 1     ;if current block on map is road 
+            ;.IF byte ptr [esi] > 0     ;if current block on map is road 
                 mov     ebx, tloop
                 mov     eax, jloop      ;eax is for x, and ebx is for y. but we exchange them here, for the convenience of mutiplication
                 call    RoadRender 
@@ -253,7 +278,7 @@ RenderMaze PROC
                     sub     ebx, Camera.Y 
                     invoke  Texturerender, ecx, ebx, SS_Dungeon_A4, gRender,addr RockGround[edx]
                 .ENDIF
-            .ENDIF
+            ;.ENDIF
             add     jloop, 1
         .ENDW
         mov     jloop, 0
@@ -278,35 +303,89 @@ RoadRender PROC ;return in edx
     add     esi, ebx
     add     esi, eax
 
-    .IF         byte ptr [esi - 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
-        xor     edx, edx
-    .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0    
-        mov     edx, 6*TYPE RockGround
-    .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0     
-        mov     edx, 2*TYPE RockGround
-    .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0      
-        mov     edx, 8*TYPE RockGround
-    .ELSEIF     byte ptr [esi - 1] == 0       
-        mov     edx, 3*TYPE RockGround
-    .ELSEIF     byte ptr [esi + 1] == 0          
-        mov     edx, 5*TYPE RockGround
-    .ELSEIF     byte ptr [esi - MAP_BLOCKS_X] == 0
-        mov     edx, 1*TYPE RockGround 
-    .ELSEIF     byte ptr [esi + MAP_BLOCKS_X] == 0
-        mov     edx, 7*TYPE RockGround
-    .ELSE
-        mov     edx, 4*TYPE RockGround
-    .ENDIF
 
+    ;draw the road
+    .IF     byte ptr [esi] == 1
+        .IF         byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+            mov     edx, 9*TYPE RockGround 
+        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0
+            mov     edx, 10*TYPE RockGround
+        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+            mov     edx, 11*TYPE RockGround
+        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+            mov     edx, 12*TYPE RockGround
+        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0
+            mov     edx, 13*TYPE RockGround
+        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+            xor     edx, edx
+        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0    
+            mov     edx, 6*TYPE RockGround
+        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0     
+            mov     edx, 2*TYPE RockGround
+        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0      
+            mov     edx, 8*TYPE RockGround
+        .ELSEIF     byte ptr [esi - 1] == 0       
+            mov     edx, 3*TYPE RockGround
+        .ELSEIF     byte ptr [esi + 1] == 0          
+            mov     edx, 5*TYPE RockGround
+        .ELSEIF     byte ptr [esi - MAP_BLOCKS_X] == 0
+            mov     edx, 1*TYPE RockGround 
+        .ELSEIF     byte ptr [esi + MAP_BLOCKS_X] == 0
+            mov     edx, 7*TYPE RockGround
+        .ELSE
+            mov     edx, 4*TYPE RockGround
+        .ENDIF
+    .ELSE
+        ;draw the wall
+        .IF         byte ptr [esi] == 2
+                .IF         byte ptr [esi - 1] != 2 && byte ptr [esi + 1] != 2 && byte ptr [esi - MAP_BLOCKS_X] != 2
+                    mov     edx, 30*TYPE RockGround 
+                .ELSEIF     byte ptr [esi - 1] != 2 && byte ptr [esi + 1] != 2 && byte ptr [esi + MAP_BLOCKS_X] != 2
+                    mov     edx, 31*TYPE RockGround
+                .ELSEIF     byte ptr [esi - 1] != 2 && byte ptr [esi + MAP_BLOCKS_X] != 2 && byte ptr [esi - MAP_BLOCKS_X] != 2
+                    mov     edx, 32*TYPE RockGround
+                .ELSEIF     byte ptr [esi + 1] != 2 && byte ptr [esi + MAP_BLOCKS_X] != 2 && byte ptr [esi - MAP_BLOCKS_X] != 2
+                    mov     edx, 33*TYPE RockGround
+                .ELSEIF     byte ptr [esi - 1] != 2 && byte ptr [esi + 1] != 2
+                    mov     edx, 34*TYPE RockGround
+                .ELSEIF     byte ptr [esi - 1] != 2 && byte ptr [esi - MAP_BLOCKS_X] != 2
+                    mov     edx, 21*TYPE RockGround
+                .ELSEIF     byte ptr [esi - 1] != 2 && byte ptr [esi + MAP_BLOCKS_X] != 2    
+                    mov     edx, 27*TYPE RockGround
+                .ELSEIF     byte ptr [esi + 1] != 2 && byte ptr [esi - MAP_BLOCKS_X] != 2     
+                    mov     edx, 23*TYPE RockGround
+                .ELSEIF     byte ptr [esi + 1] != 2 && byte ptr [esi + MAP_BLOCKS_X] != 2      
+                    mov     edx, 29*TYPE RockGround
+                .ELSEIF     byte ptr [esi - 1] != 2       
+                    mov     edx, 24*TYPE RockGround
+                .ELSEIF     byte ptr [esi + 1] != 2          
+                    mov     edx, 26*TYPE RockGround
+                .ELSEIF     byte ptr [esi - MAP_BLOCKS_X] != 2
+                    mov     edx, 22*TYPE RockGround 
+                .ELSEIF     byte ptr [esi + MAP_BLOCKS_X] != 2
+                    mov     edx, 28*TYPE RockGround
+                .ELSE
+                    mov     edx, 25*TYPE RockGround
+                .ENDIF
+        .ELSE
+            .IF     byte ptr [esi - 1] > 0 && byte ptr [esi + 1] > 0
+                mov     edx, 15*TYPE RockGround
+            .ELSEIF  byte ptr [esi - 1] > 0
+                mov     edx, 16*TYPE RockGround
+            .ELSEIF  byte ptr [esi + 1] > 0
+                mov     edx, 17*TYPE RockGround
+            .ELSE
+                mov     edx, 18*TYPE RockGround
+            .ENDIF
+        .ENDIF
+
+
+    .ENDIF
     pop     eax
     pop     ebx
     
     ret
 RoadRender ENDP
 
-FloodFill   PROC    X:SDWORD, Y:SDWORD
-
-
-FloodFill   ENDP
 
 end

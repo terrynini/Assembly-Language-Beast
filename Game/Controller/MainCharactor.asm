@@ -4,7 +4,7 @@ option casemap:none
 
 include .\include\GameSdk.inc
 
-Step        equ 8
+Step        equ 30
 AniFrame    equ 8
 extern gRender:DWORD
 extern CurrentKeystate:DWORD

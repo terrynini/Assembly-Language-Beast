@@ -74,6 +74,7 @@ extern SDL_RenderFillRect:near
 extern time:near
 extern srand:near
 extern rand:near
+extern C_FloodFill:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -98,6 +99,7 @@ SDL_SCANCODE_LEFT               equ 50h
 SDL_SCANCODE_RIGHT              equ 4fh
 SDL_SCANCODE_SPACE              equ 2ch
 SDL_SCANCODE_B                  equ 5
+SDL_SCANCODE_M                  equ 16
 SDL_TRUE                        equ 1
 MIX_DEFAULT_FORMAT              equ 8010h
 AUDIO_MUSIC                     equ 1
@@ -208,6 +210,7 @@ MainCharactor_Render    proto
 Monsters_Init       proto
 Monsters_TickTock   proto
 Monsters_Render     proto
+
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................

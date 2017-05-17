@@ -40,6 +40,4 @@ CreatureController_Render PROC
 CreatureController_Render ENDP
 
 
-
-
 end

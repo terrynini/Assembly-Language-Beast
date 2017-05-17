@@ -15,13 +15,17 @@ Controller\Monsters.asm
 
 OBJ = FontLoader.obj MusicLoader.obj MusicPlayer.obj TextureLoader.obj FontRender.obj TextureRender.obj Main.obj \
  StateController.obj StateTitle.obj StateGame.obj Map.obj CreatureController.obj StatusBar.obj BackPack.obj MainCharactor.obj \
-Monsters.obj  
+Monsters.obj C_FloodFill.obj
+
+
 #OBJ = $(SRC:%.cc=%.o)
 
 Game.exe: $(OBJ) 
 	$(CC) $(OBJ) $(CFLAGS) -o Game.exe
-	rm -f *.obj
 $(OBJ): $(SRC)
 	$(ML) $(MLFLAGS) $(SRC)
-
+	gcc	-c C_FloodFill.c -o C_FloodFill.obj
+clean:
+	rm -f *.obj 
+	rm -f Game.exe
 	

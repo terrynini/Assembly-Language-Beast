@@ -6,7 +6,7 @@ include .\include\GameSdk.inc
 include .\include\Main.inc
 
 .data
-Caption          BYTE "YOURCRAFT X-D", 0
+Caption          BYTE "Assembly-Language-Beast", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
 Font_Rationale   BYTE "Fonts/Rationale-Regular.ttf", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
@@ -33,7 +33,7 @@ gMusic              DWORD ?
 SE_Cusor            DWORD ?
 
 WorldMap            BYTE MAP_BLOCKS_X*MAP_BLOCKS_Y DUP (?)
-Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }
 
 .code
 SDL_main PROC
