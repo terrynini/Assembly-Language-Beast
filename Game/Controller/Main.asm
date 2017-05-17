@@ -178,8 +178,6 @@ GameInit PROC
     push    MIX_DEFAULT_FORMAT
     push    44100
     call    Mix_OpenAudio
-    ;Init   Map
-    call    Map_Init
     ;Init CreatureController
     call    CreatureController_Init
     ;load iamge

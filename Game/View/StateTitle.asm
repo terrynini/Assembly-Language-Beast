@@ -63,6 +63,8 @@ StateTitle_TickTock PROC
         invoke  MusicPlayer, SE_Cusor, AUDIO_WAV
         .IF     Currentoption == 0
             call    Mix_PauseMusic
+            ;Init   Map
+            call    Map_Init
             invoke  SetState, STATE_GAME
         .ELSE
             call    GameExit    

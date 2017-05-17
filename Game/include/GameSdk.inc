@@ -19,8 +19,9 @@ SCREEN_HALF_HEIGHT      equ 312d
 UPDATE_MSEC             equ 17d
 MAP_BLOCKS_X            equ 100d
 MAP_BLOCKS_Y            equ 100d
-ROOM_MAX_WIDTH          equ 40d
-ROOM_MAX_HEIGHT         equ 40d
+ROOM_MAX_WIDTH          equ 20d
+ROOM_MAX_HEIGHT         equ 20d
+MAX_ROOMS               equ 100d
 ;==========================================================================
 ;                           Declaration of extern function
 ;..........................................................................
