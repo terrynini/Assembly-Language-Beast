@@ -306,31 +306,31 @@ RoadRender PROC ;return in edx
 
     ;draw the road
     .IF     byte ptr [esi] == 1
-        .IF         byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+        .IF         byte ptr [esi - 1] != 1 && byte ptr [esi + 1] != 1 && byte ptr [esi - MAP_BLOCKS_X] != 1
             mov     edx, 9*TYPE RockGround 
-        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi - 1] != 1 && byte ptr [esi + 1] != 1 && byte ptr [esi + MAP_BLOCKS_X] != 1
             mov     edx, 10*TYPE RockGround
-        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi - 1] != 1 && byte ptr [esi + MAP_BLOCKS_X] != 1 && byte ptr [esi - MAP_BLOCKS_X] != 1
             mov     edx, 11*TYPE RockGround
-        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi + 1] != 1 && byte ptr [esi + MAP_BLOCKS_X] != 1 && byte ptr [esi - MAP_BLOCKS_X] != 1
             mov     edx, 12*TYPE RockGround
-        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + 1] == 0
+        .ELSEIF     byte ptr [esi - 1] != 1 && byte ptr [esi + 1] != 1
             mov     edx, 13*TYPE RockGround
-        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi - 1] != 1 && byte ptr [esi - MAP_BLOCKS_X] != 1
             xor     edx, edx
-        .ELSEIF     byte ptr [esi - 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0    
+        .ELSEIF     byte ptr [esi - 1] != 1 && byte ptr [esi + MAP_BLOCKS_X] != 1    
             mov     edx, 6*TYPE RockGround
-        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi - MAP_BLOCKS_X] == 0     
+        .ELSEIF     byte ptr [esi + 1] != 1 && byte ptr [esi - MAP_BLOCKS_X] != 1     
             mov     edx, 2*TYPE RockGround
-        .ELSEIF     byte ptr [esi + 1] == 0 && byte ptr [esi + MAP_BLOCKS_X] == 0      
+        .ELSEIF     byte ptr [esi + 1] != 1 && byte ptr [esi + MAP_BLOCKS_X] != 1      
             mov     edx, 8*TYPE RockGround
-        .ELSEIF     byte ptr [esi - 1] == 0       
+        .ELSEIF     byte ptr [esi - 1] != 1       
             mov     edx, 3*TYPE RockGround
-        .ELSEIF     byte ptr [esi + 1] == 0          
+        .ELSEIF     byte ptr [esi + 1] != 1          
             mov     edx, 5*TYPE RockGround
-        .ELSEIF     byte ptr [esi - MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi - MAP_BLOCKS_X] != 1
             mov     edx, 1*TYPE RockGround 
-        .ELSEIF     byte ptr [esi + MAP_BLOCKS_X] == 0
+        .ELSEIF     byte ptr [esi + MAP_BLOCKS_X] != 1
             mov     edx, 7*TYPE RockGround
         .ELSE
             mov     edx, 4*TYPE RockGround
@@ -386,6 +386,5 @@ RoadRender PROC ;return in edx
     
     ret
 RoadRender ENDP
-
 
 end

@@ -65,6 +65,8 @@ StateTitle_TickTock PROC
             call    Mix_PauseMusic
             ;Init   Map
             call    Map_Init
+            ;Init CreatureController
+            call    CreatureController_Init
             invoke  SetState, STATE_GAME
         .ELSE
             call    GameExit    

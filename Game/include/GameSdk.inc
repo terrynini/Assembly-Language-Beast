@@ -75,6 +75,9 @@ extern time:near
 extern srand:near
 extern rand:near
 extern C_FloodFill:near
+extern Map_Walkable:near
+extern Map_StartPoint:near
+extern C_Move:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -123,8 +126,8 @@ Texture ENDS
 SDL_Rect Struct
     X   SDWORD  ?
     Y   SDWORD  ?
-    W   DWORD  ?
-    H   DWORD  ?
+    W   SDWORD  ?
+    H   SDWORD  ?
 SDL_Rect ENDS
 
 SDL_Point Struct
@@ -137,8 +140,7 @@ SDL_Point ENDS
 ;..........................................................................
 
 Entity  Struct
-    X           SDWORD ?
-    Y           SDWORD ?
+    Position    SDL_Point {}
     AniCount    SDWORD ?
     texture     Texture {?, ?, ?}
     Clip        SDL_Rect 12 DUP({?, ?, 48, 48})

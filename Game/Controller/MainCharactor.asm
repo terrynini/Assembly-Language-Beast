@@ -4,13 +4,16 @@ option casemap:none
 
 include .\include\GameSdk.inc
 
-Step        equ 30
+Step        equ 5
 AniFrame    equ 8
 extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
 extern SS_SideBar:Texture
+
 public Player_Main
+
+Move    proto   :SDWORD, :SDWORD
 
 .data
 Actor2      BYTE    "res/img/characters/Actor2.png", 0
@@ -24,12 +27,17 @@ MainCharactor_Init PROC
     push    ebp
     mov     ebp, esp
     ;Init position
-    mov     Player_Main.Father.X, 100
-    mov     Player_Main.Father.Y, 100
+    push    offset Player_Main.Father.Position
+    call    Map_StartPoint
+    ;Init BoundBox
+    mov     Player_Main.Father.BoundBox.X, 8
+    mov     Player_Main.Father.BoundBox.Y, 10
+    mov     Player_Main.Father.BoundBox.W, 32
+    mov     Player_Main.Father.BoundBox.H, 36
     ;Init Camera position
-    mov     eax, Player_Main.Father.X
+    mov     eax, Player_Main.Father.Position.X
     mov     Camera.X, eax
-    mov     eax, Player_Main.Father.Y
+    mov     eax, Player_Main.Father.Position.Y
     mov     Camera.Y, eax
     ;Load the Sprite sheet 
     invoke  TextureLoader, addr Player_Main.Father.texture, addr Actor2, gRender
@@ -103,23 +111,22 @@ MainCharactor_TickTock PROC
     ;If move on the diagonals, reduce the speed
     .IF XSpeed != 0 && YSpeed != 0
         .IF XSpeed > 0
-            mov XSpeed, 9
+            mov XSpeed, Step*10/12
         .ELSE
-            mov XSpeed, -9
+            mov XSpeed, -Step*10/12
         .ENDIF
 
         .IF YSpeed > 0
-            mov YSpeed, 9
+            mov YSpeed, Step*10/12
         .ELSE
-            mov YSpeed, -9
+            mov YSpeed, -Step*10/12
         .ENDIF
     .ENDIF
     
     ;Move Charactor
-    mov     eax, XSpeed
-    add     Player_Main.Father.X, eax
-    mov     eax, YSpeed
-    add     Player_Main.Father.Y, eax
+    push    YSpeed
+    push    XSpeed
+    call    C_Move
     ;Check the boundary of Charactor
     .IF Camera.X < 0
         mov Camera.X, 0
@@ -132,11 +139,11 @@ MainCharactor_TickTock PROC
         mov Camera.X,  48 * MAP_BLOCKS_X - SCREEN_WIDTH
     .ENDIF
     ;Move Camera
-    mov     eax, Player_Main.Father.X
+    mov     eax, Player_Main.Father.Position.X
     sub     eax, SCREEN_HALF_WIDTH
-    add     eax, 24                     ;Player_Main.Fater.texture.mWidth/2
+    add     eax, 24                     ;Player_Main.Father.texture.mWidth/2
     mov     Camera.X, eax
-    mov     eax, Player_Main.Father.Y
+    mov     eax, Player_Main.Father.Position.Y
     sub     eax, SCREEN_HALF_HEIGHT
     add     eax, 24
     mov     Camera.Y, eax
@@ -215,9 +222,9 @@ MainCharactor_Render PROC
         mov Player_Main.Father.AniCount, 0
     .ENDIF
 
-    mov     ebx, Player_Main.Father.X
+    mov     ebx, Player_Main.Father.Position.X
     sub     ebx, Camera.X
-    mov     ecx, Player_Main.Father.Y
+    mov     ecx, Player_Main.Father.Position.Y
     sub     ecx, Camera.Y
     invoke  Texturerender, ebx, ecx \
             , Player_Main.Father.texture, gRender, addr Player_Main.Father.Clip[eax]
@@ -225,4 +232,5 @@ MainCharactor_Render PROC
     leave
     ret
 MainCharactor_Render ENDP
+
 end

@@ -3,7 +3,7 @@ all:Game.exe
 CC = gcc
 INSTDIR = C:\MinGW\bin
 INCLUDE = .
-CFLAGS = -IC:\MinGW\include\SDL2 -LC:\MinGW\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+CFLAGS = -IC:\MinGW\include\SDL2 -LC:\MinGW\lib -Wimplicit-function-declaration -Wl,-subsystem,windows -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 ML=ml
 MLFLAGS=-c -Cp -coff
@@ -15,8 +15,7 @@ Controller\Monsters.asm
 
 OBJ = FontLoader.obj MusicLoader.obj MusicPlayer.obj TextureLoader.obj FontRender.obj TextureRender.obj Main.obj \
  StateController.obj StateTitle.obj StateGame.obj Map.obj CreatureController.obj StatusBar.obj BackPack.obj MainCharactor.obj \
-Monsters.obj C_FloodFill.obj
-
+Monsters.obj C_FloodFill.obj C_Map.obj
 
 #OBJ = $(SRC:%.cc=%.o)
 
@@ -25,6 +24,7 @@ Game.exe: $(OBJ)
 $(OBJ): $(SRC)
 	$(ML) $(MLFLAGS) $(SRC)
 	gcc	-c C_FloodFill.c -o C_FloodFill.obj
+	gcc	-c C_Map.c 		 -o C_Map.obj
 clean:
 	rm -f *.obj 
 	rm -f Game.exe

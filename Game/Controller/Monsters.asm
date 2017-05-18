@@ -23,8 +23,8 @@ Monsters_Init PROC
     push    ebp
     mov     ebp, esp
     ;Init position
-    mov     MonsterA.Father.X, 400
-    mov     MonsterA.Father.Y, 400
+    mov     MonsterA.Father.Position.X, 400
+    mov     MonsterA.Father.Position.Y, 400
     ;Load the Sprite sheet 
     invoke  TextureLoader, addr MonsterA.Father.texture, addr MonsterSet, gRender
     ;Init Clip for Player_one, row first
@@ -64,9 +64,9 @@ Monsters_Render PROC
         mov MonsterA.Father.AniCount, 0
     .ENDIF
 
-    mov     ebx, MonsterA.Father.X
+    mov     ebx, MonsterA.Father.Position.X
     sub     ebx, Camera.X
-    mov     ecx, MonsterA.Father.Y
+    mov     ecx, MonsterA.Father.Position.Y
     sub     ecx, Camera.Y
     invoke  Texturerender, ebx, ecx \
             , MonsterA.Father.texture, gRender, addr MonsterA.Father.Clip[eax]

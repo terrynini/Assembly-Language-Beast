@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "C_lib.h"
 
 #define MAX_ROOMS 100
 #define MAP_BLOCKS_X 100
 #define MAP_BLOCKS_Y 100
-typedef struct{
-    int X, Y, W, H
-}SDL_Rect;
 
-extern int8_t Map_arr[MAP_BLOCKS_Y][MAP_BLOCKS_X];
 
-int8_t  dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
 int8_t  Map_dup[MAP_BLOCKS_Y][MAP_BLOCKS_X];
-
+const int8_t  dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
 void FloodFill(int y, int x){
     int8_t dir;
     if(y == 0 || x == 0 || y == MAP_BLOCKS_Y-1 || x == MAP_BLOCKS_X-1 || Map_dup[y][x] )
@@ -93,14 +89,7 @@ int C_FloodFill(){
                        deletecounter += 1;
                     }
 
-    for(int i = 0 ; i < MAP_BLOCKS_X ; i++){
-        for(int j = 0 ; j < MAP_BLOCKS_Y ; j++){
-            fprintf(pFile,"%d ",Map_dup[i][j]);
-        }
-        fprintf(pFile, "\n");
-       
-    }
-    fclose(pFile);
+
     
     if(deletecounter > MAP_BLOCKS_X *MAP_BLOCKS_Y)
         return 0;
@@ -116,5 +105,13 @@ int C_FloodFill(){
             }
         }
     }
+    for(int i = 0 ; i < MAP_BLOCKS_X ; i++){
+        for(int j = 0 ; j < MAP_BLOCKS_Y ; j++){
+            fprintf(pFile,"%d ",Map_arr[i][j]);
+        }
+        fprintf(pFile, "\n");
+       
+    }
+    fclose(pFile);
     return 1;
 }
