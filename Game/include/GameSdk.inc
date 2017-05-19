@@ -78,6 +78,9 @@ extern C_FloodFill:near
 extern Map_Walkable:near
 extern Map_StartPoint:near
 extern C_Move:near
+extern C_Monster_Generate:near
+extern C_Add_Monster_Kind:near
+extern C_Monster_Move:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -107,6 +110,7 @@ SDL_TRUE                        equ 1
 MIX_DEFAULT_FORMAT              equ 8010h
 AUDIO_MUSIC                     equ 1
 AUDIO_WAV                       equ 0
+
 ;==========================================================================
 ;                           Declaration of Struct for SDL
 ;..........................................................................
@@ -162,6 +166,9 @@ Monster Struct
     Health_Now  SDWORD 50
     Mana_MAX    SDWORD 200
     Mana_Now    SDWORD 150
+    WalkCount   DWORD  0
+    WalkX       DWORD  0
+    WalkY       DWORD  0
 Monster ENDS
 
 ;==========================================================================

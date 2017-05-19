@@ -15,7 +15,7 @@ Controller\Monsters.asm
 
 OBJ = FontLoader.obj MusicLoader.obj MusicPlayer.obj TextureLoader.obj FontRender.obj TextureRender.obj Main.obj \
  StateController.obj StateTitle.obj StateGame.obj Map.obj CreatureController.obj StatusBar.obj BackPack.obj MainCharactor.obj \
-Monsters.obj C_FloodFill.obj C_Map.obj
+Monsters.obj C_FloodFill.obj C_Map.obj  C_Monster.obj
 
 #OBJ = $(SRC:%.cc=%.o)
 
@@ -25,6 +25,7 @@ $(OBJ): $(SRC)
 	$(ML) $(MLFLAGS) $(SRC)
 	gcc	-c C_FloodFill.c -o C_FloodFill.obj
 	gcc	-c C_Map.c 		 -o C_Map.obj
+	gcc -c C_Monster.c -o  C_Monster.obj
 clean:
 	rm -f *.obj 
 	rm -f Game.exe

@@ -12,7 +12,8 @@ CreatureController_Init PROC
     mov     ebp, esp
 
     call    Monsters_Init
-    call    MainCharactor_Init 
+    call    MainCharactor_Init
+    
     leave
     ret
 CreatureController_Init ENDP

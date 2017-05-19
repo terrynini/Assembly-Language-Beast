@@ -4,8 +4,9 @@ option casemap:none
 
 include .\include\GameSdk.inc
 
-Step        equ 5
-AniFrame    equ 8
+Step                            equ 6
+AniFrame                        equ 8
+
 extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
@@ -21,7 +22,6 @@ Player_Main Player  {}
 AniDir      SDWORD  1
 
 .code
-
 
 MainCharactor_Init PROC
     push    ebp
@@ -127,17 +127,7 @@ MainCharactor_TickTock PROC
     push    YSpeed
     push    XSpeed
     call    C_Move
-    ;Check the boundary of Charactor
-    .IF Camera.X < 0
-        mov Camera.X, 0
-    .ELSEIF Camera.X > 48 * MAP_BLOCKS_X- SCREEN_WIDTH
-        mov Camera.X,  48 * MAP_BLOCKS_X - SCREEN_WIDTH
-    .ENDIF
-    .IF Camera.X < 0
-        mov Camera.X, 0
-    .ELSEIF Camera.X > 48 * MAP_BLOCKS_X- SCREEN_WIDTH
-        mov Camera.X,  48 * MAP_BLOCKS_X - SCREEN_WIDTH
-    .ENDIF
+
     ;Move Camera
     mov     eax, Player_Main.Father.Position.X
     sub     eax, SCREEN_HALF_WIDTH

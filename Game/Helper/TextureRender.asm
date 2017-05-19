@@ -7,7 +7,7 @@ include .\include\GameSdk.inc
 .data
 
 .code
-Texturerender PROC  X:DWORD, Y:DWORD, TEXTURE:Texture, gRender:DWORD, Clip:ptr SDL_Rect
+Texturerender PROC uses esi  X:DWORD, Y:DWORD, TEXTURE:Texture, gRender:DWORD, Clip:ptr SDL_Rect
     LOCAL renderQuad:SDL_Rect
     LOCAL point:SDL_Point
     
