@@ -59,7 +59,7 @@ void C_Monster_Move(Monster* monster, int XSpeed, int YSpeed){
     int range = sqrt(pow((Player_Main.Father.Position.X - monster->Father.Position.X),2) +
                 pow((Player_Main.Father.Position.Y - monster->Father.Position.Y),2));
 
-    if( range <= 5 * 48 ){
+    if( range <= 3 * 48 ){
         if(abs(Player_Main.Father.Position.X - monster->Father.Position.X) < 3)
             XSpeed = 0;
         else if((Player_Main.Father.Position.X > monster->Father.Position.X && XSpeed < 0)||
@@ -194,6 +194,7 @@ void C_Monster_Dead(){
             Monster_array[i] = Monster_array[Monster_count-1] ;
             Monster_array[Monster_count-1] = temp;
             Monster_count -= 1;
+            Player_Main.Health_Now = Player_Main.Health_Max;
         }
     }
     return ;

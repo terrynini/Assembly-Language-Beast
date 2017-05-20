@@ -65,7 +65,7 @@ Skill_Init PROC
     mov     Skill_Main.Father.BoundBox.Y, 56
     mov     Skill_Main.Father.BoundBox.W, 192-40*2
     mov     Skill_Main.Father.BoundBox.H, 192-56*2
-    mov     Skill_Main.Cost, 40
+    mov     Skill_Main.Cost, 100
     mov     Skill_Main.Father.AniCount, 0
 
     invoke  TextureLoader, addr Skill_Enemy.Father.texture, addr Curse, gRender
