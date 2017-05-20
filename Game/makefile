@@ -11,11 +11,11 @@ MLFLAGS=-c -Cp -coff
 SRC = Helper/FontLoader.asm Helper/MusicLoader.asm Helper/MusicPlayer.asm Helper/TextureLoader.asm \
  Helper/FontRender.asm Helper/TextureRender.asm Controller/Main.asm Controller/StateController.asm View/StateTitle.asm \
 View/StateGame.asm View/Map.asm Controller\CreatureController.asm View\StatusBar.asm View\BackPack.asm Controller\MainCharactor.asm \
-Controller\Monsters.asm  
+Controller\Monsters.asm  Controller\SkillController.asm
 
 OBJ = FontLoader.obj MusicLoader.obj MusicPlayer.obj TextureLoader.obj FontRender.obj TextureRender.obj Main.obj \
  StateController.obj StateTitle.obj StateGame.obj Map.obj CreatureController.obj StatusBar.obj BackPack.obj MainCharactor.obj \
-Monsters.obj C_FloodFill.obj C_Map.obj  C_Monster.obj
+Monsters.obj C_FloodFill.obj C_Map.obj  C_Monster.obj SkillController.obj
 
 #OBJ = $(SRC:%.cc=%.o)
 

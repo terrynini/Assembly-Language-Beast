@@ -10,6 +10,7 @@
 #define AniFrame 8
 extern int8_t  dx[4], dy[4];
 extern int Map_Walkable(SDL_Point*);
+extern int gRender;
 
 void C_Add_Monster_Kind(Monster* MonsterA){
     Monster_Kinds [ MonsterKinds ] = *MonsterA;
@@ -30,8 +31,10 @@ void C_Monster_Generate(int Num){
         }while(Map_arr[Y][X] != 1);
         Monster_array[Monster_count].Father.Position.X = X*48;
         Monster_array[Monster_count].Father.Position.Y = Y*48;
-
-
+        Monster_array[Monster_count].Health_Max = rand()%500 + 200;
+        Monster_array[Monster_count].Health_Now = Monster_array[Monster_count].Health_Max;
+        Monster_array[Monster_count].Mana_Now   = Monster_array[Monster_count].Mana_Max;
+        
         Monster_count += 1;
     }
     return;
@@ -150,4 +153,42 @@ void C_Monster_Move(Monster* monster, int XSpeed, int YSpeed){
     }
   
     return;
+}
+
+void C_Monster_Damage(){
+    SDL_Rect TempRect, monster, skill;
+    TempRect.W =0;
+    TempRect.H =0;
+    for(int i = 0 ; i < Monster_count ; i++){
+        if(Monster_array[i].Health_Now <= 0)
+            continue;
+        monster = Monster_array[i].Father.BoundBox;
+        skill = Skill_Main.Father.BoundBox;
+
+        monster.X += Monster_array[i].Father.Position.X;
+        monster.Y += Monster_array[i].Father.Position.Y;
+
+        skill.X += Skill_Main.Father.Position.X;
+        skill.Y += Skill_Main.Father.Position.Y;
+ 
+        if( SDL_IntersectRect(&monster,&skill, &TempRect)){
+            SDL_SetTextureAlphaMod(Monster_array[i].Father.texture.mTexture, 170);
+            Monster_array[i].Health_Now -= 1;
+        }
+           
+    }
+    return;
+}
+
+void C_Monster_Dead(){
+    
+    for(int i = 0 ; i < Monster_count ; i++){
+        if(Monster_array[i].Health_Now < 0 && Monster_array[i].Father.AniCount == AniFrame*20){
+            Monster temp = Monster_array[i];
+            Monster_array[i] = Monster_array[Monster_count-1] ;
+            Monster_array[Monster_count-1] = temp;
+            Monster_count -= 1;
+        }
+    }
+    return ;
 }

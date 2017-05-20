@@ -11,7 +11,7 @@ extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
 extern SS_SideBar:Texture
-
+extern Skill_Main:Skill
 public Player_Main
 
 Move    proto   :SDWORD, :SDWORD
@@ -20,7 +20,7 @@ Move    proto   :SDWORD, :SDWORD
 Actor2      BYTE    "res/img/characters/Actor2.png", 0
 Player_Main Player  {}
 AniDir      SDWORD  1
-
+StartSkill  BYTE    0
 .code
 
 MainCharactor_Init PROC
@@ -34,6 +34,10 @@ MainCharactor_Init PROC
     mov     Player_Main.Father.BoundBox.Y, 10
     mov     Player_Main.Father.BoundBox.W, 32
     mov     Player_Main.Father.BoundBox.H, 36
+    mov     eax, Player_Main.Health_Max
+    mov     Player_Main.Health_Now, eax
+    mov     eax, Player_Main.Mana_Max
+    mov     Player_Main.Mana_Now, eax
     ;Init Camera position
     mov     eax, Player_Main.Father.Position.X
     mov     Camera.X, eax
@@ -68,22 +72,29 @@ MainCharactor_TickTock PROC
     mov     YSpeed, 0
     mov     AniGo, 0
     mov     esi, CurrentKeystate
+    .IF     StartSkill < 30
+        inc     StartSkill 
+    .ENDIF
 
     .IF BYTE ptr [esi + SDL_SCANCODE_DOWN] > 0 
         add     YSpeed, Step
         inc     AniGo
-    .ENDIF
-    .IF BYTE ptr [esi + SDL_SCANCODE_LEFT] > 0
-        sub     XSpeed, Step
-        inc     AniGo
-    .ENDIF
-    .IF BYTE ptr [esi + SDL_SCANCODE_RIGHT] > 0 
-        add     XSpeed, Step
-        inc     AniGo
+        mov     Player_Main.Face, 2                
     .ENDIF
     .IF BYTE ptr [esi + SDL_SCANCODE_UP] > 0
         sub     YSpeed, Step   
         inc     AniGo
+        mov     Player_Main.Face, 0
+    .ENDIF
+    .IF BYTE ptr [esi + SDL_SCANCODE_LEFT] > 0
+        sub     XSpeed, Step
+        inc     AniGo
+        mov     Player_Main.Face, 3
+    .ENDIF
+    .IF BYTE ptr [esi + SDL_SCANCODE_RIGHT] > 0 
+        add     XSpeed, Step
+        inc     AniGo
+        mov     Player_Main.Face, 1
     .ENDIF
 
     .If AniGo > 0
@@ -94,18 +105,18 @@ MainCharactor_TickTock PROC
         .ENDIF
     .ENDIF
     ;If Step is too big
-    .IF XSpeed > Step || XSpeed < -Step 
-        .IF XSpeed > 0
-            mov XSpeed, Step
-        .ELSE
-            mov XSpeed, -Step
-        .ENDIF
-    .ENDIF
     .IF YSpeed > Step || YSpeed < -Step
         .IF YSpeed > 0
             mov YSpeed, Step
         .ELSE
             mov YSpeed, -Step
+        .ENDIF
+    .ENDIF
+    .IF XSpeed > Step || XSpeed < -Step 
+        .IF XSpeed > 0
+            mov XSpeed, Step
+        .ELSE
+            mov XSpeed, -Step
         .ENDIF
     .ENDIF
     ;If move on the diagonals, reduce the speed
@@ -194,8 +205,17 @@ MainCharactor_TickTock PROC
             mov Player_Main.Father.AniCount, AniFrame*1
         .ENDIF
     .ENDIF
-    ret
 
+    mov     esi, CurrentKeystate
+    .IF     StartSkill > 20 && BYTE ptr [esi + SDL_SCANCODE_SPACE]>0
+        invoke  Skill_Stack, PLAYER_ATTACK
+    .ENDIF
+
+    mov     eax, Player_Main.Mana_Max
+    .IF     Player_Main.Mana_Now  <  eax
+            add     Player_Main.Mana_Now, 1
+    .ENDIF
+    ret
 MainCharactor_TickTock ENDP
 
 MainCharactor_Render PROC
@@ -218,7 +238,7 @@ MainCharactor_Render PROC
     sub     ecx, Camera.Y
     invoke  Texturerender, ebx, ecx \
             , Player_Main.Father.texture, gRender, addr Player_Main.Father.Clip[eax]
-    
+ 
     leave
     ret
 MainCharactor_Render ENDP

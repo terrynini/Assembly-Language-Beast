@@ -60,18 +60,20 @@ void C_Move(int XSpeed, int YSpeed){
 }
 
 void Map_StartPoint(SDL_Point *Start){
-
-    for(int i = 1 ; i < MAP_BLOCKS_Y - 1; i++){
-        for(int j = 1 ; j < MAP_BLOCKS_X - 1 ; j++){
+    int i , j;
+    while(1){
+            i = rand()%(MAP_BLOCKS_X-2) + 1;
+            j = rand()%(MAP_BLOCKS_Y-2) + 1;
             if(Map_arr[i][j] != 1)
                 continue;
             Start->X = j*48;
             Start->Y = i*48;
 
             return;
-        }
-        
     }
+        
 
     return;
 }
+
+ 

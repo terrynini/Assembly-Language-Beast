@@ -22,6 +22,8 @@ MAP_BLOCKS_Y            equ 100d
 ROOM_MAX_WIDTH          equ 20d
 ROOM_MAX_HEIGHT         equ 20d
 MAX_ROOMS               equ 100d
+PLAYER_ATTACK           equ 0
+Max_Monster             equ 40
 ;==========================================================================
 ;                           Declaration of extern function
 ;..........................................................................
@@ -81,6 +83,8 @@ extern C_Move:near
 extern C_Monster_Generate:near
 extern C_Add_Monster_Kind:near
 extern C_Monster_Move:near
+extern C_Monster_Damage:near
+extern C_Monster_Dead:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -151,26 +155,41 @@ Entity  Struct
     BoundBox    SDL_Rect {?, ?, ?, ?}
 Entity  ENDS
 
+Entitytwo  Struct
+    Position    SDL_Point {}
+    AniCount    SDWORD ?
+    texture     Texture {?, ?, ?}
+    Clip        SDL_Rect 21 DUP({?, ?, 48, 48})
+    BoundBox    SDL_Rect {?, ?, ?, ?}
+Entitytwo  ENDS
+
 Player Struct
     Father      Entity {}
     Health_Max  SDWORD 100
     Health_Now  SDWORD 50
-    Mana_MAX    SDWORD 200
+    Mana_Max    SDWORD 200
     Mana_Now    SDWORD 150
+    Face        DWORD  0
 Player ENDS
 
 Monster Struct
     Father      Entity {}
     AniDir      SDWORD 1
-    Health_Max  SDWORD 100
-    Health_Now  SDWORD 50
+    Health_Max  SDWORD 250
+    Health_Now  SDWORD ?
     Mana_MAX    SDWORD 200
-    Mana_Now    SDWORD 150
+    Mana_Now    SDWORD ?
     WalkCount   DWORD  0
     WalkX       DWORD  0
     WalkY       DWORD  0
 Monster ENDS
 
+Skill Struct
+    Father      Entitytwo {}
+    CD          DWORD 0
+    Damage      SDWORD 0
+    Cost        SDWORD 0
+Skill ENDS
 ;==========================================================================
 ;                   Declatation of Procedure
 ;..........................................................................
@@ -202,6 +221,7 @@ CreatureController_TickTock proto
 
 StatusBar_Init      proto
 StatusBar_Render    proto
+StatusBar_TickTock  proto
 
 StateTitle_Init     proto
 StateTitle_TickTock proto
@@ -220,6 +240,10 @@ Monsters_Init       proto
 Monsters_TickTock   proto
 Monsters_Render     proto
 
+Skill_Init           proto
+Skill_TickTock      proto
+Skill_Render        proto
+Skill_Stack          proto :DWORD
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................

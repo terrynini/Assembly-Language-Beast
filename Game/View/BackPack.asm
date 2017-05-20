@@ -4,9 +4,12 @@ option casemap:none
 
 include .\include\GameSdk.inc
 
+MaxOptions  equ 2
+
 extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern gFont_Ration:DWORD
+extern gFont_Indie:DWORD
 
 DrawSideBar_row proto :SDL_Rect, :SDL_Rect, :SDL_Rect, :SDWORD
 DrawSideBar proto :ptr SDL_Rect, :SDWORD, :SDWORD, :SDWORD
@@ -20,6 +23,11 @@ SS_System       Texture {?, ?, ?}
 SS_SideBar      Texture {?, ?, ?}
 TargetRec       SDL_Rect {0, 0, 48, 48}
 OptionTexture   Texture 2 DUP ({?, ?, ?})
+CurrentOption   DWORD 0
+ShowText        BYTE "There is nothing here. What a genius!", 0
+Gunter          BYTE "res/img/Gunter_in_Sign.png", 0
+ShowTextTexture Texture {}
+Gunter_in_Sign  Texture {?, ?, ?}
 
 public  Clip_Background
 Clip_Background SDL_Rect {0, 0, 12, 12}, {12, 0, 12, 12}, {84, 0, 12, 12}, {0, 12, 12, 12} \
@@ -42,6 +50,8 @@ BackPack_Init PROC
     push    ebp
     mov     ebp, esp
     ;Load picture
+    invoke  TextureLoader,addr Gunter_in_Sign, addr Gunter, gRender
+
     push    offset File_System 
     call    IMG_Load
     mov     MaterialSurface, eax
@@ -76,8 +86,9 @@ BackPack_Init PROC
     mov     edx, [eax + 0ch]
     mov     [esi].Texture.mHeight, edx
     ;Draw text on texture
-    invoke  FontRender, addr S_BackPack, addr OptionTexture, gFont_Ration, gRender, 255
-    invoke  FontRender, addr S_About, addr [OptionTexture + TYPE OptionTexture], gFont_Ration, gRender, 255
+    invoke  FontRender, addr S_About, addr OptionTexture, gFont_Ration, gRender, 255
+    invoke  FontRender,addr ShowText, addr ShowTextTexture, gFont_Indie, gRender, 255
+    mov     CurrentOption, 0
     leave
     ret
 BackPack_Init ENDP
@@ -89,13 +100,14 @@ BackPack_TickTock PROC
      .IF     ColdDown < 30
         add     ColdDown, 1 
     .ENDIF
+
     mov     esi, CurrentKeystate
     .IF ColdDown > 20 && BYTE ptr [esi + SDL_SCANCODE_B] > 0 
         invoke  SetState, STATE_GAME
         mov     ColdDown, 0
     .ENDIF
- 
-    leave
+
+    leave 
     ret
 BackPack_TickTock ENDP
     
@@ -105,9 +117,9 @@ BackPack_Render PROC
 
     call    StateGame_Render
     invoke  Texturerender, 0, 0, SS_SideBar, gRender, 0
-    
     invoke  Texturerender, 50, 60, OptionTexture, gRender, 0
-    invoke  Texturerender, 50, 140, [OptionTexture + TYPE OptionTexture], gRender, 0
+    invoke  Texturerender, 350, 100, Gunter_in_Sign, gRender, 0
+    invoke  Texturerender, 270, 40,  ShowTextTexture, gRender, 0
     leave
     ret
 BackPack_Render ENDP

@@ -9,6 +9,7 @@ include .\include\Main.inc
 Caption          BYTE "Assembly-Language-Beast", 0
 Font_gloria      BYTE "Fonts/GloriaHallelujah.ttf", 0
 Font_Rationale   BYTE "Fonts/Rationale-Regular.ttf", 0
+Font_Indie       BYTE "Fonts/IndieFlower.ttf", 0
 MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
 Icon             BYTE "res/img/icon.png", 0
@@ -28,6 +29,7 @@ CurrentKeystate     DWORD ?
 gWindow             DWORD ?
 gFont               DWORD ?
 gFont_Ration        DWORD ?
+gFont_Indie         DWORD ?
 gRender             DWORD ?
 gMusic              DWORD ?
 SE_Cusor            DWORD ?
@@ -71,6 +73,7 @@ LoadMedia PROC
 
     invoke  FontLoader, addr Font_gloria, addr gFont
     invoke  FontLoader, addr Font_Rationale, addr gFont_Ration
+    invoke  FontLoader, addr Font_Indie, addr gFont_Indie
     invoke  MusicLoader, addr gMusic,addr MUS_BGM, AUDIO_MUSIC
     invoke  MusicLoader, addr SE_Cusor, addr Cusor_SE, AUDIO_WAV
     ;play   background music

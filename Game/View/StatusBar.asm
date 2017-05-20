@@ -37,8 +37,21 @@ StatusBar_TickTock PROC
     push    ebp
     mov     ebp, esp
     
-    mov     esi, offset S_HMAX
-    mov     eax, Player_Main.Health_Max
+    xor     edx, edx
+    mov     eax, 175
+    mov     ebx, Player_Main.Mana_Now
+    mul     ebx
+    mov     ebx, Player_Main.Mana_Max
+    div     ebx
+    mov     Clip_MANA.W, eax
+
+    xor     edx, edx
+    mov     eax, 175
+    mov     ebx, Player_Main.Health_Now
+    mul     ebx
+    mov     ebx, Player_Main.Health_Max
+    div     ebx
+    mov     Clip_HP.W, eax
 
     leave
     ret

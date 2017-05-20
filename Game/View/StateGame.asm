@@ -16,6 +16,7 @@ StateGame_Init PROC
     push    ebp
     mov     ebp, esp
     invoke  MusicLoader, addr SE_OpenBP, addr Open_SE, AUDIO_WAV
+    call    Skill_Init
     leave
     ret
 StateGame_Init ENDP
@@ -25,6 +26,8 @@ StateGame_TickTock PROC
     mov     ebp, esp
 
     call    CreatureController_TickTock
+    call    Skill_TickTock
+    call    StatusBar_TickTock
     .IF     BackPack_CD < 30
         add     BackPack_CD, 1 
     .ENDIF
@@ -46,6 +49,7 @@ StateGame_Render PROC
     call    Map_Render
     call    CreatureController_Render
     call    StatusBar_Render
+    call    Skill_Render
     leave
     ret
 StateGame_Render ENDP

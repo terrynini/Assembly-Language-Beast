@@ -10,29 +10,76 @@ extern gRender:DWORD
 extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
 extern SS_SideBar:Texture
+extern Main_Casting:DWORD
+extern gFont_Ration:DWORD
 
 public  Monster_Kinds
 public  MonsterKinds
 public  Monster_array
 public  Monster_count
-
+ 
 .data
 MonsterSet      BYTE    "res/img/characters/Monster.png", 0
+DeadSet         BYTE    "res/img/animations/StateDark.png", 0
+DeadAni         Texture {}
+DeadClip        SDL_Rect 20 DUP ({})
+
 MonsterA        Monster {}
 Monster_array   Monster 100 DUP({})
 Monster_count   DWORD   0
+Monster_count_Text BYTE "00", 0
+Count_Text_Texture Texture {}
 Monster_Kinds   Monster 100  DUP({})
 MonsterKinds    DWORD   0
+
 .code
 
 Monsters_Init PROC
-    push    ebp
-    mov     ebp, esp
+    LOCAL   Mloop:SDWORD
     
     call    Monster_Kinds_Init
-    push    40
+    push    Max_Monster
     call    C_Monster_Generate
-    leave
+    ;load the dead animation
+    invoke  TextureLoader, addr DeadAni, addr DeadSet, gRender
+    ;init the dead Clip 
+    mov     eax, 0;y
+    mov     ebx, 0;x
+    mov     esi, offset DeadClip
+    .WHILE  eax < 768
+        .WHILE  ebx < 960
+            mov     [esi].SDL_Rect.X, ebx
+            mov     [esi].SDL_Rect.Y, eax
+            mov     [esi].SDL_Rect.W, 192
+            mov     [esi].SDL_Rect.H, 192
+            add     ebx, 192
+            add     esi, TYPE SDL_Rect
+        .ENDW
+        mov     ebx, 0
+        add     eax, 192
+    .ENDW
+
+    mov     edi, offset Monster_array
+    mov     eax, Monster_count
+    mov     Mloop, eax
+    .WHILE  Mloop > 0
+    
+        invoke  TextureLoader, addr [edi].Monster.Father.texture, addr MonsterSet, gRender
+
+        sub     Mloop, 1
+        add     edi, TYPE Monster_array
+    .ENDW
+
+    mov     eax, Monster_count
+    xor     edx, edx
+    mov     ebx, 10
+    div     ebx
+    add     eax, 48
+    add     edx, 48
+    mov     Monster_count_Text[0], al
+    mov     Monster_count_Text[1], dl
+    invoke  FontRender, addr Monster_count_Text, addr Count_Text_Texture, gFont_Ration, gRender, 255
+
     ret
 Monsters_Init ENDP
 
@@ -48,6 +95,33 @@ Monsters_TickTock PROC
         mov     XSpeed, 0
         mov     YSpeed, 0
         
+        .IF     [edi].Monster.Health_Now == 0
+            mov     [edi].Monster.Father.AniCount, 0
+            mov     [edi].Monster.Health_Now, -1
+            sub     Mloop, 1
+            add     edi, TYPE Monster_array
+            .CONTINUE
+        .ELSEIF [edi].Monster.Health_Now < 0
+
+            .IF [edi].Monster.Father.AniCount == AniFrame*20
+                call    C_Monster_Dead
+                mov     eax, Monster_count
+                xor     edx, edx
+                mov     ebx, 10
+                div     ebx
+                add     eax, 48
+                add     edx, 48
+                mov     Monster_count_Text[0], al
+                mov     Monster_count_Text[1], dl
+                invoke  FontRender, addr Monster_count_Text, addr Count_Text_Texture, gFont_Ration, gRender, 255
+            .ENDIF
+
+            add     [edi].Monster.Father.AniCount, 1
+            sub     Mloop, 1
+            add     edi, TYPE Monster_array
+            .CONTINUE
+        .ENDIF
+
         .IF     [edi].Monster.WalkCount == 0
             call    rand
             xor     edx, edx
@@ -96,7 +170,11 @@ Monsters_TickTock PROC
             .ENDIF
             sub     [edi].Monster.WalkCount, 1
         .ENDIF
-    
+        .IF Main_Casting == 0
+            push    255
+            push    [edi].Monster.Father.texture.mTexture
+            call    SDL_SetTextureAlphaMod
+        .ENDIF
         push    YSpeed
         push    XSpeed
         push    edi
@@ -105,6 +183,7 @@ Monsters_TickTock PROC
         sub     Mloop, 1
         add     edi, TYPE Monster_array
     .ENDW
+
 
     ret
 Monsters_TickTock ENDP
@@ -125,20 +204,34 @@ Monsters_Render PROC
         div     ebx
         mov     ebx, 16
         mul     ebx
-        .IF [esi].Monster.Father.AniCount == AniFrame*12
-            mov [esi].Monster.Father.AniCount, 0
+
+        .IF     [esi].Monster.Health_Now < 0
+
+            mov     ebx, [esi].Monster.Father.Position.X
+            sub     ebx, Camera.X
+            sub     ebx, 192/2 - 24
+            mov     ecx, [esi].Monster.Father.Position.Y
+            sub     ecx, Camera.Y
+            sub     ecx, 192/2 - 24
+            invoke  Texturerender, ebx, ecx, DeadAni, gRender, addr DeadClip[eax]
+
+        .ELSE
+            .IF [esi].Monster.Father.AniCount == AniFrame*12
+                mov [esi].Monster.Father.AniCount, 0
+            .ENDIF
+
+            mov     ebx, [esi].Monster.Father.Position.X
+            sub     ebx, Camera.X
+            mov     ecx, [esi].Monster.Father.Position.Y
+            sub     ecx, Camera.Y
+            invoke  Texturerender, ebx, ecx, [esi].Monster.Father.texture, gRender, addr [esi].Monster.Father.Clip[eax]
         .ENDIF
 
-        mov     ebx, [esi].Monster.Father.Position.X
-        sub     ebx, Camera.X
-        mov     ecx, [esi].Monster.Father.Position.Y
-        sub     ecx, Camera.Y
-        invoke  Texturerender, ebx, ecx, [esi].Monster.Father.texture, gRender, addr [esi].Monster.Father.Clip[eax]
-            
         sub     Mloop, 1
         add     edi, TYPE Monster_array
     .ENDW
 
+    invoke      Texturerender, SCREEN_WIDTH - 30, 0, Count_Text_Texture, gRender, 0
     ret
 Monsters_Render ENDP
 
