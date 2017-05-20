@@ -34,7 +34,7 @@ void C_Monster_Generate(int Num){
         Monster_array[Monster_count].Health_Max = rand()%500 + 200;
         Monster_array[Monster_count].Health_Now = Monster_array[Monster_count].Health_Max;
         Monster_array[Monster_count].Mana_Now   = Monster_array[Monster_count].Mana_Max;
-        
+        Monster_array[Monster_count].ID         = Monster_count ;
         Monster_count += 1;
     }
     return;
@@ -58,6 +58,7 @@ void C_Monster_Move(Monster* monster, int XSpeed, int YSpeed){
     //IF Player is in attack range of monster
     int range = sqrt(pow((Player_Main.Father.Position.X - monster->Father.Position.X),2) +
                 pow((Player_Main.Father.Position.Y - monster->Father.Position.Y),2));
+
     if( range <= 5 * 48 ){
         if(abs(Player_Main.Father.Position.X - monster->Father.Position.X) < 3)
             XSpeed = 0;
@@ -72,8 +73,13 @@ void C_Monster_Move(Monster* monster, int XSpeed, int YSpeed){
             YSpeed = -YSpeed;
         }
     }
+
     if( range <= 1*48){
         XSpeed = YSpeed = 0;
+        if(monster->Casting != 1){
+            monster->Casting = 1;
+            Skill_Stack(monster->ID);
+        }
     }
     //Check X axis
     for(int i = 0 ; i < 4 ; i++)
@@ -183,7 +189,7 @@ void C_Monster_Damage(){
 void C_Monster_Dead(){
     
     for(int i = 0 ; i < Monster_count ; i++){
-        if(Monster_array[i].Health_Now < 0 && Monster_array[i].Father.AniCount == AniFrame*20){
+        if(Monster_array[i].Health_Now < 0 && Monster_array[i].Father.AniCount == 2*20){
             Monster temp = Monster_array[i];
             Monster_array[i] = Monster_array[Monster_count-1] ;
             Monster_array[Monster_count-1] = temp;

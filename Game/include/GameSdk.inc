@@ -85,6 +85,9 @@ extern C_Add_Monster_Kind:near
 extern C_Monster_Move:near
 extern C_Monster_Damage:near
 extern C_Monster_Dead:near
+extern C_SkillStack:near
+extern C_SkillRender:near
+extern C_Monster_CD:near
 ;==========================================================================
 ;                           Declaration of SDL_Static
 ;..........................................................................
@@ -182,10 +185,13 @@ Monster Struct
     WalkCount   DWORD  0
     WalkX       DWORD  0
     WalkY       DWORD  0
+    Casting     DWORD  0
+    ID          DWORD  0
 Monster ENDS
 
 Skill Struct
     Father      Entitytwo {}
+    ID          DWORD 0
     CD          DWORD 0
     Damage      SDWORD 0
     Cost        SDWORD 0
@@ -244,6 +250,10 @@ Skill_Init           proto
 Skill_TickTock      proto
 Skill_Render        proto
 Skill_Stack          proto :DWORD
+
+StateDead_Init      proto
+StateDead_TickTock  proto
+StateDead_Render    proto
 ;==========================================================================
 ;                   Declatation of State
 ;..........................................................................
@@ -251,4 +261,5 @@ Skill_Stack          proto :DWORD
 STATE_TITLE     equ 0
 STATE_GAME      equ 1
 STATE_BACKPACK  equ 2
+STATE_DEAD      equ 3
 

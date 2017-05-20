@@ -28,6 +28,7 @@ typedef struct{
     SDL_Rect Clip[21];
     SDL_Rect BoundBox;
 }Entitytwo;
+
 typedef struct{
     Entity  Father;
     int Health_Max  ;
@@ -47,14 +48,18 @@ typedef struct{
     int WalkCount   ;
     int WalkX     ;
     int WalkY     ;
+    int Casting ;
+    int ID;
 }Monster; 
 
 typedef struct{
     Entitytwo  Father ;
+    int ID      ;
     int CD      ;
     int Damage   ;
     int Cost ;
 }Skill;
+
 extern Player Player_Main;
 extern Monster Monster_Kinds[100];
 extern Monster Monster_array[100];
@@ -62,6 +67,7 @@ extern int MonsterKinds;
 extern int Monster_count;
 extern int8_t Map_arr[MAP_BLOCKS_Y][MAP_BLOCKS_X];
 extern Skill Skill_Main;
+extern Skill Skill_Enemy;
 extern SDL_Rect Camera;
 extern SDL_Rect Clip_HP;
 extern SDL_Rect Clip_MANA;

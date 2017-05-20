@@ -10,12 +10,16 @@ extern CurrentKeystate:DWORD
 BackPack_CD BYTE 0
 Open_SE     BYTE "res/audio/se/book2.wav", 0
 SE_OpenBP   DWORD ?
+
+
+
 .code
 
 StateGame_Init PROC
     push    ebp
     mov     ebp, esp
     invoke  MusicLoader, addr SE_OpenBP, addr Open_SE, AUDIO_WAV
+
     call    Skill_Init
     leave
     ret

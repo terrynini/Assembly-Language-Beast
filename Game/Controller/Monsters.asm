@@ -17,12 +17,16 @@ public  Monster_Kinds
 public  MonsterKinds
 public  Monster_array
 public  Monster_count
- 
+public  DeadAni
+public  DeadClip
 .data
 MonsterSet      BYTE    "res/img/characters/Monster.png", 0
 DeadSet         BYTE    "res/img/animations/StateDark.png", 0
 DeadAni         Texture {}
 DeadClip        SDL_Rect 20 DUP ({})
+
+Dead_SE         BYTE    "res/audio/se/Monster2.wav", 0
+SE_Dead         DWORD ?
 
 MonsterA        Monster {}
 Monster_array   Monster 100 DUP({})
@@ -40,6 +44,8 @@ Monsters_Init PROC
     call    Monster_Kinds_Init
     push    Max_Monster
     call    C_Monster_Generate
+    ;dead se
+    invoke  MusicLoader, addr SE_Dead, addr Dead_SE, AUDIO_WAV
     ;load the dead animation
     invoke  TextureLoader, addr DeadAni, addr DeadSet, gRender
     ;init the dead Clip 
@@ -100,10 +106,11 @@ Monsters_TickTock PROC
             mov     [edi].Monster.Health_Now, -1
             sub     Mloop, 1
             add     edi, TYPE Monster_array
+           invoke  MusicPlayer, SE_Dead, AUDIO_WAV
             .CONTINUE
         .ELSEIF [edi].Monster.Health_Now < 0
 
-            .IF [edi].Monster.Father.AniCount == AniFrame*20
+            .IF [edi].Monster.Father.AniCount == 2*20;AniFrame*20
                 call    C_Monster_Dead
                 mov     eax, Monster_count
                 xor     edx, edx
@@ -198,14 +205,15 @@ Monsters_Render PROC
     .WHILE  Mloop > 0
         mov     esi, edi
 
-        xor     edx, edx
-        mov     eax, [esi].Monster.Father.AniCount
-        mov     ebx, AniFrame
-        div     ebx
-        mov     ebx, 16
-        mul     ebx
 
         .IF     [esi].Monster.Health_Now < 0
+
+            xor     edx, edx
+            mov     eax, [esi].Monster.Father.AniCount
+            mov     ebx, 2
+            div     ebx
+            mov     ebx, 16
+            mul     ebx
 
             mov     ebx, [esi].Monster.Father.Position.X
             sub     ebx, Camera.X
@@ -216,6 +224,13 @@ Monsters_Render PROC
             invoke  Texturerender, ebx, ecx, DeadAni, gRender, addr DeadClip[eax]
 
         .ELSE
+            xor     edx, edx
+            mov     eax, [esi].Monster.Father.AniCount
+            mov     ebx, AniFrame
+            div     ebx
+            mov     ebx, 16
+            mul     ebx
+
             .IF [esi].Monster.Father.AniCount == AniFrame*12
                 mov [esi].Monster.Father.AniCount, 0
             .ENDIF

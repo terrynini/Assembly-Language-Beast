@@ -14,6 +14,7 @@ MUS_BGM          BYTE "res/audio/bgm/CampFire.wav", 0
 Cusor_SE         BYTE "res/audio/se/Cursor1.wav", 0
 Icon             BYTE "res/img/icon.png", 0
 Loading          BYTE "res/img/system/Loading.png", 0
+Musicfile   BYTE "res/audio/bgm/Dungeon2.wav", 0
 
 playing          DWORD 0
 Currentoption    DWORD 0
@@ -33,6 +34,7 @@ gFont_Indie         DWORD ?
 gRender             DWORD ?
 gMusic              DWORD ?
 SE_Cusor            DWORD ?
+DMusic      DWORD ?
 
 WorldMap            BYTE MAP_BLOCKS_X*MAP_BLOCKS_Y DUP (?)
 Camera              SDL_Rect { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }
@@ -75,7 +77,9 @@ LoadMedia PROC
     invoke  FontLoader, addr Font_Rationale, addr gFont_Ration
     invoke  FontLoader, addr Font_Indie, addr gFont_Indie
     invoke  MusicLoader, addr gMusic,addr MUS_BGM, AUDIO_MUSIC
+
     invoke  MusicLoader, addr SE_Cusor, addr Cusor_SE, AUDIO_WAV
+
     ;play   background music
     invoke  MusicPlayer, gMusic, AUDIO_MUSIC
 

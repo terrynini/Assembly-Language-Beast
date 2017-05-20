@@ -18,7 +18,8 @@ State_Init PROC
     call    StateTitle_Init
     call    BackPack_Init
     call    StateGame_Init
-
+    call    StateDead_Init 
+    
     leave
     ret
 State_Init ENDP
@@ -39,6 +40,8 @@ StateTickTock PROC
         call    StateGame_TickTock
     .ELSEIF CurrentState == STATE_BACKPACK
         call    BackPack_TickTock
+    .ELSEIF CurrentState == STATE_DEAD
+        call    StateDead_TickTock
     .ENDIF
 
     leave
@@ -55,6 +58,8 @@ StateRender PROC
         call    StateGame_Render
     .ELSEIF CurrentState == STATE_BACKPACK
         call    BackPack_Render
+    .ELSEIF CurrentState == STATE_DEAD
+        call    StateDead_Render  
     .ENDIF
 
     leave

@@ -11,11 +11,11 @@ MLFLAGS=-c -Cp -coff
 SRC = Helper/FontLoader.asm Helper/MusicLoader.asm Helper/MusicPlayer.asm Helper/TextureLoader.asm \
  Helper/FontRender.asm Helper/TextureRender.asm Controller/Main.asm Controller/StateController.asm View/StateTitle.asm \
 View/StateGame.asm View/Map.asm Controller\CreatureController.asm View\StatusBar.asm View\BackPack.asm Controller\MainCharactor.asm \
-Controller\Monsters.asm  Controller\SkillController.asm
+Controller\Monsters.asm  Controller\SkillController.asm View\StateDead.asm
 
 OBJ = FontLoader.obj MusicLoader.obj MusicPlayer.obj TextureLoader.obj FontRender.obj TextureRender.obj Main.obj \
  StateController.obj StateTitle.obj StateGame.obj Map.obj CreatureController.obj StatusBar.obj BackPack.obj MainCharactor.obj \
-Monsters.obj C_FloodFill.obj C_Map.obj  C_Monster.obj SkillController.obj
+Monsters.obj C_FloodFill.obj C_Map.obj  C_Monster.obj SkillController.obj C_Skill.obj StateDead.obj
 
 #OBJ = $(SRC:%.cc=%.o)
 
@@ -26,6 +26,7 @@ $(OBJ): $(SRC)
 	gcc	-c C_FloodFill.c -o C_FloodFill.obj
 	gcc	-c C_Map.c 		 -o C_Map.obj
 	gcc -c C_Monster.c -o  C_Monster.obj
+	gcc -c C_Skill.c -o C_Skill.obj
 clean:
 	rm -f *.obj 
 	rm -f Game.exe

@@ -16,3 +16,4 @@ public gFont
 public Camera
 public gFont_Ration
 public gFont_Indie
+public DMusic

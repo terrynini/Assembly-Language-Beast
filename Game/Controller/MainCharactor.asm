@@ -18,6 +18,13 @@ Move    proto   :SDWORD, :SDWORD
 
 .data
 Actor2      BYTE    "res/img/characters/Actor2.png", 0
+Dead_SE     BYTE    "res/audio/se/Battle2.wav", 0
+SE_Dead     DWORD   ?
+DeadClip    SDL_Rect 10 DUP({})
+
+Deadfile    BYTE    "res/img/animations/Darkness3.png", 0
+DeadTexture Texture {}
+
 Player_Main Player  {}
 AniDir      SDWORD  1
 StartSkill  BYTE    0
@@ -26,6 +33,7 @@ StartSkill  BYTE    0
 MainCharactor_Init PROC
     push    ebp
     mov     ebp, esp
+    invoke  MusicLoader, addr SE_Dead, addr Dead_SE, AUDIO_WAV
     ;Init position
     push    offset Player_Main.Father.Position
     call    Map_StartPoint
@@ -34,7 +42,8 @@ MainCharactor_Init PROC
     mov     Player_Main.Father.BoundBox.Y, 10
     mov     Player_Main.Father.BoundBox.W, 32
     mov     Player_Main.Father.BoundBox.H, 36
-    mov     eax, Player_Main.Health_Max
+    mov     eax, 1000
+    mov     Player_Main.Health_Max, eax
     mov     Player_Main.Health_Now, eax
     mov     eax, Player_Main.Mana_Max
     mov     Player_Main.Mana_Now, eax
@@ -59,6 +68,24 @@ MainCharactor_Init PROC
         xor     ebx, ebx
         add     eax, 48
     .ENDW
+    ;
+    invoke  TextureLoader, addr DeadTexture, addr Deadfile, gRender
+    ;init the dead Clip 
+    mov     eax, 0;y
+    mov     ebx, 0;x
+    mov     esi, offset DeadClip
+    .WHILE  eax < 384
+        .WHILE  ebx < 960
+            mov     [esi].SDL_Rect.X, ebx
+            mov     [esi].SDL_Rect.Y, eax
+            mov     [esi].SDL_Rect.W, 192
+            mov     [esi].SDL_Rect.H, 192
+            add     ebx, 192
+            add     esi, TYPE SDL_Rect
+        .ENDW
+        mov     ebx, 0
+        add     eax, 192
+    .ENDW
 
     leave
     ret
@@ -68,6 +95,19 @@ MainCharactor_TickTock PROC
     LOCAL   XSpeed:SDWORD
     LOCAL   YSpeed:SDWORD
     LOCAL   AniGo:SDWORD
+
+    .IF     Player_Main.Health_Now == 0
+            mov     Player_Main.Father.AniCount, 0
+            mov     Player_Main.Health_Now, -1
+            invoke  MusicPlayer, SE_Dead, AUDIO_WAV
+            ret
+    .ELSEIF  Player_Main.Health_Now < 0
+            .IF Player_Main.Father.AniCount == 3*10;AniFrame*12
+                invoke  SetState, STATE_DEAD
+            .ENDIF
+            add     Player_Main.Father.AniCount, 1
+            ret
+    .ENDIF
     mov     XSpeed, 0
     mov     YSpeed, 0
     mov     AniGo, 0
@@ -221,24 +261,41 @@ MainCharactor_TickTock ENDP
 MainCharactor_Render PROC
     push    ebp
     mov     ebp, esp
+    .IF     Player_Main.Health_Now <= 0
+        xor     edx, edx
+        mov     eax, Player_Main.Father.AniCount
+        mov     ebx, 3;AniFrame
+        div     ebx
+        mov     ebx, 16
+        mul     ebx
 
-    xor     edx, edx
-    mov     eax, Player_Main.Father.AniCount
-    mov     ebx, AniFrame
-    div     ebx
-    mov     ebx, 16
-    mul     ebx
-    .IF Player_Main.Father.AniCount == AniFrame*12
-        mov Player_Main.Father.AniCount, 0
+        mov     ebx, Player_Main.Father.Position.X
+        sub     ebx, Camera.X
+        sub     ebx, 192/2 - 24
+        mov     ecx, Player_Main.Father.Position.Y
+        sub     ecx, Camera.Y
+        sub     ecx, 192/2 + 24
+        invoke  Texturerender, ebx, ecx \
+                , DeadTexture, gRender, addr DeadClip[eax]
+
+    .ELSE
+        xor     edx, edx
+        mov     eax, Player_Main.Father.AniCount
+        mov     ebx, AniFrame
+        div     ebx
+        mov     ebx, 16
+        mul     ebx
+        .IF Player_Main.Father.AniCount == AniFrame*12
+            mov Player_Main.Father.AniCount, 0
+        .ENDIF
+
+        mov     ebx, Player_Main.Father.Position.X
+        sub     ebx, Camera.X
+        mov     ecx, Player_Main.Father.Position.Y
+        sub     ecx, Camera.Y
+        invoke  Texturerender, ebx, ecx \
+                , Player_Main.Father.texture, gRender, addr Player_Main.Father.Clip[eax]
     .ENDIF
-
-    mov     ebx, Player_Main.Father.Position.X
-    sub     ebx, Camera.X
-    mov     ecx, Player_Main.Father.Position.Y
-    sub     ecx, Camera.Y
-    invoke  Texturerender, ebx, ecx \
-            , Player_Main.Father.texture, gRender, addr Player_Main.Father.Clip[eax]
- 
     leave
     ret
 MainCharactor_Render ENDP

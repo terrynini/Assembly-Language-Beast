@@ -9,7 +9,7 @@ extern SE_Cusor:DWORD
 extern gRender:DWORD
 extern gFont:DWORD
 extern GameExit:PROC
-
+extern DMusic:DWORD
 .data
 Currentoption    DWORD 0
 Option_CD        BYTE 0
@@ -20,6 +20,8 @@ OptionTexture       Texture 2 DUP ({?, ?, ?})
 S_GAMESTART      BYTE "New Game", 0
 S_GAMEEXIT       BYTE "Exit", 0
 PIC_PNG          BYTE "img/WorldMap.png", 0
+
+
 .code
 
 StateTitle_Init PROC
@@ -29,6 +31,7 @@ StateTitle_Init PROC
     invoke  TextureLoader,addr BackgroundTexture, addr PIC_PNG, gRender
     invoke  FontRender, addr S_GAMESTART, addr OptionTexture, gFont, gRender, 60
     invoke  FontRender, addr S_GAMEEXIT, addr [OptionTexture + TYPE OptionTexture], gFont, gRender, 60
+
     ;init option image
     push    180
     push    OptionTexture.mTexture

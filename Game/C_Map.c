@@ -6,7 +6,7 @@
 #define MAX_ROOMS 100
 #define MAP_BLOCKS_X 100
 #define MAP_BLOCKS_Y 100
-#define DEBUG
+//#define DEBUG
 extern int8_t  dx[4], dy[4];
 
 int Map_Walkable(SDL_Point* Position){
