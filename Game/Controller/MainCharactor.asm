@@ -12,6 +12,7 @@ extern CurrentKeystate:DWORD
 extern Camera:SDL_Rect
 extern SS_SideBar:Texture
 extern Skill_Main:Skill
+extern SE_HAHA:DWORD
 public Player_Main
 
 Move    proto   :SDWORD, :SDWORD
@@ -103,6 +104,7 @@ MainCharactor_TickTock PROC
             ret
     .ELSEIF  Player_Main.Health_Now < 0
             .IF Player_Main.Father.AniCount == 3*10;AniFrame*12
+                invoke  MusicPlayer, SE_HAHA, AUDIO_WAV
                 invoke  SetState, STATE_DEAD
             .ENDIF
             add     Player_Main.Father.AniCount, 1
