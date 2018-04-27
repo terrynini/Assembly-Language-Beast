@@ -16,6 +16,8 @@ B:     backpack, but nothing there<br>
 * Map will be randomly generated every time
 * HP of monster will be randomly generated, too
 
+## Architecture
+[](architecture.png)
 # Call C function in Assembly
 
 ## generate a *.o file
