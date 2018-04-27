@@ -16,3 +16,21 @@ B:     backpack, but nothing there<br>
 * Map will be randomly generated every time
 * HP of monster will be randomly generated, too
 
+# Call C function in Assembly
+
+## generate a *.o file
+> $gcc -c test.c -o test.o
+
+or add pragma to tell IDE not to link
+>  #pragma src </br>
+
+
+## generate a *.a file
+
+>ar rcs libtst.a test.o
+
+
+## Gcc tips
+add this directive to notify gas using Intel syntax
+>.intel_syntax noprefix
+
