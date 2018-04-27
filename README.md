@@ -17,7 +17,7 @@ B:     backpack, but nothing there<br>
 * HP of monster will be randomly generated, too
 
 ## Architecture
-[](./architecture.png)
+![architecture](./architecture.png)
 # Call C function in Assembly
 
 ## generate a *.o file
